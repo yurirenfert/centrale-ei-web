@@ -1,37 +1,28 @@
-.App {
-  text-align: center;
+.Home-container {
+  padding: 32px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.movie-search-input {
+  width: 100%;
+  max-width: 420px;
+  padding: 12px;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.movies-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
 }
 
-.App-header {
-  background-color: #282c34;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.movies-empty-message {
+  margin-top: 16px;
+  color: #4b5563;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.movies-loading-error {
+  margin-top: 16px;
+  color: #dc2626;
 }
