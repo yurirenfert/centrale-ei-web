@@ -4,6 +4,7 @@ import About from './pages/About/About';
 import Layout from './components/Layout/Layout';
 import AddMovie from './pages/AddMovie/AddMovie';
 import Users from './pages/Users/Users';
+import MovieDetails from './pages/MovieDetails/MovieDetails';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="movies/new" element={<AddMovie />} />
+        <Route path="movies/:movieId" element={<MovieDetails />} />
         <Route path="users" element={<Users />} />
         <Route path="about" element={<About />} />
       </Routes>
