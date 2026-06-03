@@ -52,9 +52,9 @@ def load_data(db_path):
 
 def build_user_movie_matrix(ratings_df):
     return ratings_df.pivot(
-        index="userId",
-        columns="movieId",
-        values="rating"
+        index="user_id",
+        columns="movie_id",
+        values="rating_value"
     ).fillna(0)
 
 
@@ -89,19 +89,19 @@ def build_genre_similarity(
 ):
     movie_genre_merged = movies_genres_df.merge(
         genres_df,
-        left_on="genre_id",
-        right_on="genre_id"
+        left_on="movieId",
+        right_on="id"
     )
 
     movie_genre_list = (
         movie_genre_merged
-        .groupby("movieId")["genre_name"]
+        .groupby("movieId")["name"]
         .apply(list)
     )
 
     movie_genre_list = (
         movie_genre_list
-        .reindex(movies_df["movieId"])
+        .reindex(movies_df["id"])
         .apply(lambda x: x if isinstance(x, list) else [])
     )
 
@@ -111,7 +111,7 @@ def build_genre_similarity(
 
     genre_df = pd.DataFrame(
         genre_matrix,
-        index=movies_df["movieId"],
+        index=movies_df["id"],
         columns=mlb.classes_
     )
 
@@ -238,7 +238,7 @@ def build_recommendations_for_user(
     )
 
     recommendations_df = final_scores.reset_index()
-    recommendations_df.columns = ["movie_id", "score"]
+    recommendations_df.columns = ["MovieId", "score"]
 
     recommendations_df["user_id"] = user_id
     recommendations_df["ranking"] = range(

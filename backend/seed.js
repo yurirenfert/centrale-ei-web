@@ -34,7 +34,7 @@ async function fetchMovies(pages = 25) {
   return allMovies;
 }
 
-async function seedUsers(userRepository, n = 1000) {
+async function seedUsers(userRepository, n) {
   const usersToCreate = [];
   const existing = await userRepository.find();
   const existingEmails = new Set(existing.map((u) => u.email));
@@ -163,7 +163,7 @@ async function seed() {
   await appDataSource.initialize();
   console.log('Base de données co');
 
-  const movies = await fetchMovies(10);
+  const movies = await fetchMovies(25);
   const allGenres = await fetchGenres();
 
   const movieRepository = appDataSource.getRepository(Movie);
@@ -181,8 +181,7 @@ async function seed() {
     genreMap[g.id] = genre;
   }
 
-  // create users once (outside the movie loop)
-  const users = await seedUsers(userRepository, 500);
+  const users = await seedUsers(userRepository, 1000);
 
   for (const film of movies) {
     const existing = await movieRepository.findOneBy({ tmdbId: film.id });
@@ -204,17 +203,10 @@ async function seed() {
     });
 
     await movieRepository.save(newMovie);
-    console.log(`Film sauvegardé : ${film.title}`);
   }
 
   // seed ratings once, after movies exist in DB
-  await seedRatings(
-    userRepository,
-    movieRepository,
-    ratingRepository,
-    users,
-    movies
-  );
+  await seedRatings(userRepository, movieRepository, ratingRepository, users);
 
   console.log('Terminé !');
   process.exit(0); // on ferme le script proprement
