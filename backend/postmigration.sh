@@ -8,5 +8,10 @@ fi
 
 # Format migrations file to use es modules format
 
-sed -i '' 's/const { MigrationInterface, QueryRunner } = require(\"typeorm\");/import typeorm from \"typeorm\";\n\nconst { MigrationInterface, QueryRunner } = typeorm;/g' migrations/*
-sed -i '' 's/module.exports = class/export default class/g' migrations/*
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    sed -i '' 's/const { MigrationInterface, QueryRunner } = require(\"typeorm\");/import typeorm from \"typeorm\";\n\nconst { MigrationInterface, QueryRunner } = typeorm;/g' migrations/*
+    sed -i '' 's/module.exports = class/export default class/g' migrations/*
+else
+    sed -i 's/const { MigrationInterface, QueryRunner } = require(\"typeorm\");/import typeorm from \"typeorm\";\n\nconst { MigrationInterface, QueryRunner } = typeorm;/g' migrations/*
+    sed -i 's/module.exports = class/export default class/g' migrations/*
+fi
