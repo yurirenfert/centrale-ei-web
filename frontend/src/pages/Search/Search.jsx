@@ -1,30 +1,15 @@
-import './Home.css';
+import { useState } from 'react';
 import Movie from '../../components/Movie/Movie';
-import { useFetchMovies } from './useFetchMovies';
+import { useFetchMovies } from '../Home/useFetchMovies';
+import './Search.css';
 
-function Home() {
+function Search() {
   const [movieSearch, setMovieSearch] = useState('');
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  const { movies, moviesLoadingError } = useFetchMovies(
-    movieSearch,
-    currentUser
-  );
+  const { movies, moviesLoadingError } = useFetchMovies(movieSearch);
 
   return (
-    <div className="Home-container">
-      {currentUser ? (
-        <h1>
-          Recommandations pour {currentUser.nickname || currentUser.firstname}
-        </h1>
-      ) : (
-        <h1>Films populaires</h1>
-      )}
-
-      {!currentUser && (
-        <p>Connecte-toi pour avoir des recommandations personnalisées.</p>
-      )}
-
+    <div className="Search-container">
+      <h1>Rechercher un film</h1>
       <input
         className="movie-search-input"
         type="text"
@@ -32,17 +17,14 @@ function Home() {
         value={movieSearch}
         onChange={(event) => setMovieSearch(event.target.value)}
       />
-
       <div className="movies-list">
         {movies.map((movie) => (
           <Movie key={movie.id} movie={movie} />
         ))}
       </div>
-
       {movies.length === 0 && moviesLoadingError === null && (
         <p className="movies-empty-message">Aucun film trouvé.</p>
       )}
-
       {moviesLoadingError !== null && (
         <div className="movies-loading-error">{moviesLoadingError}</div>
       )}
@@ -50,4 +32,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Search;

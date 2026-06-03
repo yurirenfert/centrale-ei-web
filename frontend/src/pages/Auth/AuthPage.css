@@ -1,0 +1,120 @@
+.AuthPage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 48px 32px;
+  background-color: #141414;
+  color: #fff;
+}
+
+.AuthPage-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(280px, 1fr);
+  gap: 48px;
+  width: min(980px, 100%);
+}
+
+.AuthPage-copy {
+  padding-top: 12px;
+}
+
+.AuthPage-kicker {
+  margin: 0 0 10px;
+  color: #e50914;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.AuthPage-copy h1 {
+  margin: 0 0 16px;
+  font-size: 56px;
+  line-height: 1;
+}
+
+.AuthPage-copy p:not(.AuthPage-kicker) {
+  margin: 0;
+  max-width: 360px;
+  color: #b3b3b3;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.AuthPage-formArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.AuthPage-link {
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.AuthPage-link a {
+  color: #fff;
+  font-weight: 800;
+}
+
+.AuthPage-message-success,
+.AuthPage-message-error {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.AuthPage-message-success {
+  color: #4ade80;
+}
+
+.AuthPage-message-error {
+  color: #f87171;
+}
+
+.AuthPage-summary {
+  width: min(520px, 100%);
+  padding-top: 8px;
+  color: #b3b3b3;
+}
+
+.AuthPage-summary h2 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 20px;
+}
+
+.AuthPage-summary p {
+  margin: 0 0 4px;
+  font-weight: 800;
+}
+
+.AuthPage-summary span {
+  font-size: 14px;
+}
+
+.AuthPage-secondary {
+  width: fit-content;
+  min-height: 40px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 14px;
+  color: #fff;
+  background-color: #333;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .AuthPage {
+    padding: 32px 16px;
+  }
+
+  .AuthPage-panel {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .AuthPage-copy h1 {
+    font-size: 42px;
+  }
+}
