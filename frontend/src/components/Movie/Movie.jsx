@@ -4,6 +4,7 @@ import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './Movie.css';
 
 function Movie({ movie }) {
+  const movieDetailsId = movie.tmdbId || movie.id;
   const releaseYear = movie.release_date?.slice(0, 4) || 'Date inconnue';
   const rating =
     typeof movie.vote_average === 'number'
@@ -19,7 +20,7 @@ function Movie({ movie }) {
   return (
     <Link
       className="movie-card"
-      to={`/movies/${movie.id}`}
+      to={`/movies/${movieDetailsId}`}
       aria-label={`Voir les details de ${movie.title}`}
     >
       {posterUrl !== null ? (
