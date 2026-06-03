@@ -111,3 +111,25 @@
     width: min(292px, 82vw);
   }
 }
+
+
+.movie-card:first-child .movie-preview,
+.movie-card:nth-child(7n+1) .movie-preview {
+  left: 0;
+  transform: translateX(0) scale(0.82);
+}
+
+.movie-card:first-child:hover .movie-preview,
+.movie-card:nth-child(7n+1):hover .movie-preview {
+  transform: translateX(0) scale(1);
+}
+
+.movie-card:nth-child(7n) .movie-preview {
+  left: auto;
+  right: 0;
+  transform: translateX(0) scale(0.82);
+}
+
+.movie-card:nth-child(7n):hover .movie-preview {
+  transform: translateX(0) scale(1);
+}

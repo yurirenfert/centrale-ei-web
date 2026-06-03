@@ -6,6 +6,7 @@ function Home() {
   const { movies, moviesLoadingError } = useFetchMovies('');
 
   return (
+    
     <div className="Home-container">
       <h1>Films populaires</h1>
       <div className="movies-list">
