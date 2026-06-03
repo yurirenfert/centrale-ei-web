@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', function (req, res) {
   appDataSource
     .getRepository(Movie)
-    .find({})
+    .find({relations:['genres']})
     .then(function (movies) {
       res.json({ movies: movies });
     });
