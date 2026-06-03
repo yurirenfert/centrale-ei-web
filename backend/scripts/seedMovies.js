@@ -72,9 +72,7 @@ function normalizeMovie(tmdbMovie, genreByTmdbId) {
       overview: tmdbMovie.overview || null,
       background_path: tmdbMovie.backdrop_path || null,
       popularity:
-        typeof tmdbMovie.popularity === 'number'
-          ? tmdbMovie.popularity
-          : null,
+        typeof tmdbMovie.popularity === 'number' ? tmdbMovie.popularity : null,
     },
     genres: (tmdbMovie.genre_ids || [])
       .map((genreId) => genreByTmdbId.get(genreId))
