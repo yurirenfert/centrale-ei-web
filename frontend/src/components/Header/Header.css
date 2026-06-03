@@ -1,16 +1,60 @@
 .Header-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  padding: 5px;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  gap: 34px;
+  min-height: 72px;
+  padding: 0 32px;
+  background-color: #141414;
 }
 
-.Header-container > :not(:last-child) {
-  margin-right: 10px;
+.Header-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-.Link {
-  font-weight: 700;
-  color: white;
+.Header-link {
+  color: #b3b3b3;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.Header-link:hover,
+.Header-link.active {
+  color: #fff;
+}
+
+.Logo-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.Header-logo {
+  display: block;
+  width: 142px;
+  max-width: 40vw;
+  height: auto;
+}
+
+@media (max-width: 700px) {
+  .Header-container {
+    gap: 16px;
+    min-height: 64px;
+    padding: 0 14px;
+  }
+
+  .Header-nav {
+    gap: 14px;
+  }
+
+  .Header-link {
+    font-size: 13px;
+  }
+
+  .Header-logo {
+    width: 118px;
+  }
 }

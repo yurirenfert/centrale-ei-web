@@ -1,5 +1,5 @@
 .Layout-container {
-  background-color: #282c34;
+  background-color: #141414;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -7,5 +7,7 @@
 }
 
 .Layout-content {
-  padding: 20px;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
 }

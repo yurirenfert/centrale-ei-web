@@ -1,17 +1,17 @@
-.Home-container {
+.Search-container {
   padding: 32px;
   overflow: hidden;
   background-color: #141414;
   color: white;
 }
 
-.Home-container h1 {
+.Search-container h1 {
   margin: 0 0 24px;
   font-size: 40px;
   line-height: 1.1;
 }
 
-.movie-search-input {
+.Search-container .movie-search-input {
   width: 100%;
   max-width: 420px;
   padding: 12px;
@@ -23,11 +23,11 @@
   font-size: 16px;
 }
 
-.movie-search-input::placeholder {
+.Search-container .movie-search-input::placeholder {
   color: #9ca3af;
 }
 
-.movies-list {
+.Search-container .movies-list {
   display: flex;
   gap: 10px;
   margin: 0 -32px;
@@ -38,30 +38,30 @@
   scroll-padding-left: 32px;
 }
 
-.movies-list::-webkit-scrollbar {
+.Search-container .movies-list::-webkit-scrollbar {
   display: none;
 }
 
-.movies-empty-message {
+.Search-container .movies-empty-message {
   margin-top: 16px;
   color: #d1d5db;
 }
 
-.movies-loading-error {
+.Search-container .movies-loading-error {
   margin-top: 16px;
   color: #f87171;
 }
 
 @media (max-width: 640px) {
-  .Home-container {
+  .Search-container {
     padding: 24px 16px;
   }
 
-  .Home-container h1 {
+  .Search-container h1 {
     font-size: 32px;
   }
 
-  .movies-list {
+  .Search-container .movies-list {
     margin: 0 -16px;
     padding-right: 16px;
     padding-left: 16px;
