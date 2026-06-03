@@ -13,17 +13,26 @@ async function fetchGenres() {
     return res.data.genres;
 }
 
+async function fetchMovies(pages = 10) {
+    const allMovies = [];
+    for (let page = 1; page <= pages; page++) {
+        const response = await axios.get("https://api.themoviedb.org/3/movie/popular", {
+            headers: { Authorization: `Bearer ${API_TOKEN}` },
+            params: { page }
+        });
+        allMovies.push(...response.data.results);
+        console.log(`Page ${page} récupérée`);
+    }
+    return allMovies;
+}
 
 async function seed() {
     await appDataSource.initialize();
     console.log("Base de données co");
 
-    const response = await axios.get("https://api.themoviedb.org/3/movie/popular", {
-        headers: { Authorization: `Bearer ${API_TOKEN}` }
-    });
+    const movies = await fetchMovies(10);
     const allGenres = await fetchGenres();
 
-    const movies = response.data.results;
     const movieRepository = appDataSource.getRepository(Movie);
     const genreRepository = appDataSource.getRepository(Genre);
 
@@ -40,8 +49,10 @@ async function seed() {
 
 
     for (const film of movies) {
+        const existing = await movieRepository.findOneBy({ tmdbId: film.id });
+        if (existing) continue; 
         const genres = film.genre_ids.map(id => genreMap[id]).filter(Boolean);
-
+        
         const newMovie = movieRepository.create({
             title: film.title,
             tmdbId: film.id,
