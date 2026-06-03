@@ -5,6 +5,7 @@ import { appDataSource } from './datasource.js';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 import moviesRouter from './routes/movies.js';
+import devRouter from './routes/dev.js';
 import { jsonErrorHandler } from './services/jsonErrorHandler.js';
 import { routeNotFoundJsonHandler } from './services/routeNotFoundJsonHandler.js';
 
@@ -19,6 +20,7 @@ const startServer = async () => {
 
   // Register routes
   app.use('/', indexRouter);
+  app.use('/dev', devRouter);
   app.use('/users', usersRouter);
   app.use('/movies', moviesRouter);
 

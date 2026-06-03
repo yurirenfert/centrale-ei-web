@@ -53,4 +53,17 @@ router.delete('/:userId', function (req, res) {
     });
 });
 
+router.get('/:userId/recommendations', function (req, res) {
+  const userId = req.params.userId;
+
+  // Pour commencer : fausse reco simple
+  res.json({
+    userId: userId,
+    recommendations: [
+      { id: 1, title: 'Inception' },
+      { id: 2, title: 'Interstellar' },
+    ],
+  });
+});
+
 export default router;
