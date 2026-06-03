@@ -44,3 +44,5 @@ print(movies_genres_df.head())
 
 print("\nGenres DataFrame:")
 print(genres_df.head())
+
+movie_user_matrix = ratings_df.pivot(index='userId', columns='movieId', values='rating')
