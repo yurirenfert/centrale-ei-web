@@ -1,0 +1,43 @@
+.AuthForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 520px;
+}
+
+.AuthForm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.AuthForm-field input {
+  min-height: 44px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  padding: 0 12px;
+  color: #fff;
+  background-color: #1f1f1f;
+  font-size: 16px;
+}
+
+.AuthForm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.AuthForm-submit {
+  min-height: 44px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 18px;
+  color: #fff;
+  background-color: #e50914;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}

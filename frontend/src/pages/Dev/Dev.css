@@ -1,0 +1,41 @@
+.Dev-container {
+  padding: 32px;
+  background-color: #141414;
+  color: white;
+}
+
+.Dev-container h1 {
+  margin: 0 0 24px;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.Dev-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.Dev-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background-color: #1f1f1f;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.Dev-link:hover {
+  border-color: #e50914;
+  color: #e50914;
+}
+
+@media (max-width: 640px) {
+  .Dev-container {
+    padding: 24px 16px;
+  }
+}

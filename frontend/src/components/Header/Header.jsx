@@ -1,25 +1,27 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
   return (
-    <div className="Header-container">
-      <Link className="Link" to="/">
-        Home
+    <header className="Header-container">
+      <Link className="Logo-link" to="/" aria-label="Accueil Flouflix">
+        <img className="Header-logo" src="/flouflix-logo.svg" alt="Flouflix" />
       </Link>
-      <div>|</div>
-      <Link className="Link" to="/movies/new">
-        Ajouter un film
-      </Link>
-      <div>|</div>
-      <Link className="Link" to="/users">
-        Users
-      </Link>
-      <div>|</div>
-      <Link className="Link" to="/about">
-        About
-      </Link>
-    </div>
+      <nav className="Header-nav" aria-label="Navigation principale">
+        <NavLink className="Header-link" to="/">
+          Accueil
+        </NavLink>
+        <NavLink className="Header-link" to="/discover">
+          Discover
+        </NavLink>
+        <NavLink className="Header-link" to="/search">
+          Rechercher
+        </NavLink>
+        <NavLink className="Header-link" to="/login">
+          Connexion
+        </NavLink>
+      </nav>
+    </header>
   );
 };
 
