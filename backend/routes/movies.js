@@ -58,6 +58,15 @@ router.post('/new', function (req, res) {
     })
     .catch(function (error) {
       console.error(error);
+
+      if (error.code === 'SQLITE_CONSTRAINT') {
+        res.status(409).json({
+          message: 'Movie already exists',
+        });
+
+        return;
+      }
+
       res.status(500).json({
         message: 'Error while creating the movie',
       });
