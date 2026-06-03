@@ -114,8 +114,8 @@ async function seedRatings(
   // build plain objects for insertion
   const rows = [];
   for (const user of users) {
-    let n = Math.round(randn(25, 5)) + 5;
-    n = clamp(n, 5, 60);
+    let n = Math.round(randn(25, 5));
+    n = clamp(n, 5, 30);
 
     const selected = new Set();
     while (selected.size < n) {
