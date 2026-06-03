@@ -1,12 +1,17 @@
 import './Home.css';
 import Movie from '../../components/Movie/Movie';
+import { useAuth } from '../../contexts/AuthContext';
 import { useFetchMovies } from './useFetchMovies';
 
 function Home() {
+  const { currentUser } = useAuth();
   const { movies, moviesLoadingError } = useFetchMovies('');
 
   return (
     <div className="Home-container">
+      {currentUser !== null && (
+        <p className="Home-welcome">Bienvenue {currentUser.displayName}</p>
+      )}
       <h1>Films populaires</h1>
       <div className="movies-list">
         {movies.map((movie) => (

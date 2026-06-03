@@ -11,6 +11,13 @@
   line-height: 1.1;
 }
 
+.Home-welcome {
+  margin: 0 0 10px;
+  color: #b3b3b3;
+  font-size: 18px;
+  font-weight: 700;
+}
+
 .movie-search-input {
   width: 100%;
   max-width: 420px;

@@ -13,6 +13,19 @@ router.get('/', function (req, res) {
     });
 });
 
+router.get('/tmdb/:tmdbId', function (req, res) {
+  appDataSource
+    .getRepository(Movie)
+    .findOneBy({ tmdbId: req.params.tmdbId })
+    .then(function (movie) {
+      if (movie === null) {
+        res.status(404).json({ message: 'Movie not found' });
+      } else {
+        res.json({ movie: movie });
+      }
+    });
+});
+
 router.get('/:id', function (req, res) {
   appDataSource
     .getRepository(Movie)

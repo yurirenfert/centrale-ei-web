@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthForm from '../../components/AuthForm/AuthForm';
 import { buildProfile } from '../../services/authProfile';
+import { useAuth } from '../../contexts/AuthContext';
 import '../Auth/AuthPage.css';
 
 const DEFAULT_FORM_VALUES = {
@@ -13,6 +14,7 @@ const DEFAULT_FORM_VALUES = {
 function Login() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { login, logout } = useAuth();
   const [formValues, setFormValues] = useState({
     ...DEFAULT_FORM_VALUES,
     email: location.state?.email || '',
@@ -51,6 +53,7 @@ function Login() {
           user,
         });
 
+        login(profile);
         setSavedProfile(profile);
         setLoginSuccess('Connexion effectuee.');
       })
@@ -61,6 +64,7 @@ function Login() {
   };
 
   const clearProfile = () => {
+    logout();
     setSavedProfile(null);
     setFormValues(DEFAULT_FORM_VALUES);
     setLoginError(null);

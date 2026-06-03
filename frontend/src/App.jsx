@@ -10,6 +10,7 @@ import Search from './pages/Search/Search';
 import Discover from './pages/Discover/Discover';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
+import RatingOnboarding from './pages/RatingOnboarding/RatingOnboarding';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="discover" element={<Discover />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="onboarding/ratings" element={<RatingOnboarding />} />
         <Route path="movies/new" element={<AddMovie />} />
         <Route path="movies/:movieId" element={<MovieDetails />} />
         <Route path="users" element={<Users />} />

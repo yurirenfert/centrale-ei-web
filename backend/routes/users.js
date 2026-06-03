@@ -17,8 +17,7 @@ router.post('/new', function (req, res) {
   const userRepository = appDataSource.getRepository(User);
   const newUser = userRepository.create({
     email: req.body.email,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
+    nickname: req.body.nickname || req.body.firstname,
   });
 
   userRepository

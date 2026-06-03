@@ -22,7 +22,7 @@ function UsersTable({ users, onSuccessfulUserDeletion }) {
           {users.map((user) => (
             <tr key={user.email}>
               <td>{user.email}</td>
-              <td>{user.firstname}</td>
+              <td>{user.nickname || user.firstname}</td>
               <td>{user.lastname}</td>
               <td>
                 <button onClick={() => deleteUser(user.id)}>Delete</button>

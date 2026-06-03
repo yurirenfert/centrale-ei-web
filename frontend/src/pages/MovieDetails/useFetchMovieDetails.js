@@ -20,7 +20,19 @@ export function useFetchMovieDetails(movieId) {
         },
       })
       .then((response) => {
-        setMovie(response.data);
+        const tmdbMovie = response.data;
+
+        return axios
+          .get(`${import.meta.env.VITE_BACKEND_URL}/movies/tmdb/${tmdbMovie.id}`)
+          .then((databaseResponse) => {
+            setMovie({
+              ...tmdbMovie,
+              databaseId: databaseResponse.data.movie.id,
+            });
+          })
+          .catch(() => {
+            setMovie(tmdbMovie);
+          });
       })
       .catch((error) => {
         setMovieLoadingError('Impossible de charger les details du film.');

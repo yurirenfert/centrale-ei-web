@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const MAX_MOVIES_RESULTS = 10;
+
 export function useFetchMovies(movieSearch) {
   const [movies, setMovies] = useState([]);
   const [moviesLoadingError, setMoviesLoadingError] = useState(null);
@@ -8,30 +10,26 @@ export function useFetchMovies(movieSearch) {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const cleanMovieSearch = movieSearch.trim();
-      const isSearchingMovie = cleanMovieSearch !== '';
-      const url = isSearchingMovie
-        ? 'https://api.themoviedb.org/3/search/movie'
-        : 'https://api.themoviedb.org/3/movie/popular';
-      const params = {
-        language: 'fr-FR',
-        page: 1,
-      };
-
-      if (isSearchingMovie) {
-        params.query = cleanMovieSearch;
-      }
+      const lowerCaseMovieSearch = cleanMovieSearch.toLowerCase();
 
       setMoviesLoadingError(null);
 
       axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_TOKEN}`,
-          },
-          params,
-        })
+        .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
         .then((response) => {
-          setMovies(response.data.results.slice(0, 10));
+          const databaseMovies = response.data.movies;
+          const filteredMovies =
+            lowerCaseMovieSearch === ''
+              ? databaseMovies
+              : databaseMovies.filter((movie) =>
+                  movie.title.toLowerCase().includes(lowerCaseMovieSearch)
+                );
+          const sortedMovies = [...filteredMovies].sort(
+            (firstMovie, secondMovie) =>
+              (secondMovie.popularity || 0) - (firstMovie.popularity || 0)
+          );
+
+          setMovies(sortedMovies.slice(0, MAX_MOVIES_RESULTS));
         })
         .catch((error) => {
           setMoviesLoadingError('An error occured while fetching movies.');

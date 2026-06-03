@@ -48,6 +48,13 @@ function MovieDetails() {
     typeof movie.vote_average === 'number'
       ? `${movie.vote_average.toFixed(1)}/10`
       : null;
+  const ratingMovie =
+    movie.databaseId !== undefined
+      ? {
+          id: movie.databaseId,
+          tmdbId: movie.id,
+        }
+      : null;
 
   return (
     <main className="movie-details-page">
@@ -81,7 +88,10 @@ function MovieDetails() {
               <p className="movie-details-tagline">{movie.tagline}</p>
             )}
 
-            <MovieActions className="movie-details-actions" />
+            <MovieActions
+              className="movie-details-actions"
+              movie={ratingMovie}
+            />
 
             <div className="movie-details-meta">
               {releaseYear && <span>{releaseYear}</span>}

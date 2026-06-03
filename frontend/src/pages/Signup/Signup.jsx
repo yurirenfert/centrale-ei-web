@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthForm from '../../components/AuthForm/AuthForm';
+import { useAuth } from '../../contexts/AuthContext';
+import { buildProfile } from '../../services/authProfile';
 import '../Auth/AuthPage.css';
 
 function Signup() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formValues, setFormValues] = useState({
     email: location.state?.email || '',
     displayName: location.state?.displayName || '',
@@ -27,12 +30,23 @@ function Signup() {
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/users/new`, {
         email: formValues.email.trim(),
-        firstname: formValues.displayName.trim(),
-        lastname: '',
+        nickname: formValues.displayName.trim(),
       })
-      .then(() => {
-        navigate('/login', {
-          state: { email: formValues.email },
+      .then((response) => {
+        const profile = buildProfile({
+          user: {
+            id: response.data.id,
+            email: formValues.email.trim(),
+            nickname: formValues.displayName.trim(),
+          },
+        });
+
+        login(profile);
+        navigate('/onboarding/ratings', {
+          state: {
+            userId: response.data.id,
+            displayName: formValues.displayName.trim(),
+          },
         });
       })
       .catch((error) => {
