@@ -1,0 +1,16 @@
+.Footer-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.Footer-link {
+  color: #777;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.Footer-link:hover {
+  color: #aaa;
+}

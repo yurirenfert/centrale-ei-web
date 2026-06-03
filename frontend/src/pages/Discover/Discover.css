@@ -1,0 +1,56 @@
+.Discover-container {
+  padding: 32px;
+  overflow: hidden;
+  background-color: #141414;
+  color: white;
+}
+
+.Discover-header {
+  margin-bottom: 32px;
+}
+
+.Discover-header h1 {
+  margin: 0 0 8px;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.Discover-header p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.Discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(172px, 172px));
+  gap: 28px 14px;
+  align-items: start;
+  overflow: visible;
+}
+
+.Discover-status {
+  margin: 0;
+  color: #d1d5db;
+}
+
+.Discover-error {
+  margin: 0;
+  color: #f87171;
+}
+
+@media (max-width: 640px) {
+  .Discover-container {
+    padding: 24px 16px;
+  }
+
+  .Discover-header h1 {
+    font-size: 32px;
+  }
+
+  .Discover-grid {
+    grid-template-columns: repeat(auto-fill, minmax(132px, 132px));
+    gap: 20px 10px;
+  }
+}

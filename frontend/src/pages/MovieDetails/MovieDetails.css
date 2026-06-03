@@ -1,6 +1,5 @@
 .movie-details-page {
   position: relative;
-  min-height: calc(100vh - 68px);
   overflow: hidden;
   color: white;
   background-color: #141414;
@@ -95,7 +94,6 @@
 }
 
 .movie-details-status {
-  min-height: calc(100vh - 68px);
   margin: 0;
   padding: 32px;
   color: white;
