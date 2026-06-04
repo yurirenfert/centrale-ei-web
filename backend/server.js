@@ -7,7 +7,6 @@ import usersRouter from './routes/users.js';
 import moviesRouter from './routes/movies.js';
 import recommandationRouter from './routes/recommandation.js';
 import ratingsRouter from './routes/ratings.js';
-import devRouter from './routes/dev.js';
 import { startRecommandationJob } from './jobs/recommandationJob.js';
 import { jsonErrorHandler } from './services/jsonErrorHandler.js';
 import { routeNotFoundJsonHandler } from './services/routeNotFoundJsonHandler.js';
