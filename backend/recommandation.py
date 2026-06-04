@@ -13,12 +13,15 @@ from sklearn.preprocessing import MultiLabelBinarizer
 DB_PATH = "/Users/emmanueldelache/Downloads/Git-Projet-ST4/centrale-ei-web/backend/database.sqlite3"
 
 # Item similarity weights
-ALPHA = 0.7  # Collaborative filtering
-BETA = 0.3   # Genre similarity
+ALPHA = 0.6  # Collaborative filtering
+BETA = 0.4   # Genre similarity
 
 # Final recommendation weights
-GAMMA = 0.6  # User-based prediction
-DELTA = 0.4  # Item-based prediction
+GAMMA = 0.65  # User-based prediction
+DELTA = 0.45  # Item-based prediction
+
+# How many recommendations to generate per user
+TOP_K = 25
 
 
 # =============================================================================
@@ -49,6 +52,12 @@ def load_data(db_path):
 # =============================================================================
 # SIMILARITY MATRICES
 # =============================================================================
+
+def _pick_col(df, candidates):
+    for c in candidates:
+        if c in df.columns:
+            return c
+    return None
 
 def build_user_movie_matrix(ratings_df):
     return ratings_df.pivot(
@@ -87,21 +96,43 @@ def build_genre_similarity(
     movies_genres_df,
     genres_df
 ):
-    movie_genre_merged = movies_genres_df.merge(
-        genres_df,
-        left_on="movieId",
-        right_on="id"
-    )
+    # pick actual column names present in your dataframes
+    movie_col = _pick_col(movies_df, ["movie_id", "movieId", "id"])
+    mg_movie_col = _pick_col(movies_genres_df, ["movie_id", "movieId", "movieId_id", "movieId"])
+    mg_genre_col = _pick_col(movies_genres_df, ["genre_id", "genreId", "genreId_id", "genreId"])
+    genre_id_col = _pick_col(genres_df, ["id", "genre_id", "genreId"])
+    genre_name_col = _pick_col(genres_df, ["name", "title", "genre"])
 
+    # safe merge: use discovered column names
+    if mg_movie_col is None or mg_genre_col is None:
+        # fallback: try common names
+        mg_movie_col = mg_movie_col or movies_genres_df.columns[0]
+        mg_genre_col = mg_genre_col or movies_genres_df.columns[1]
+
+    if genre_id_col and genre_name_col and genre_id_col in genres_df.columns:
+        movie_genre_merged = movies_genres_df.merge(
+            genres_df[[genre_id_col, genre_name_col]],
+            left_on=mg_genre_col,
+            right_on=genre_id_col,
+            how="left"
+        )
+        genre_key = genre_name_col
+    else:
+        movie_genre_merged = movies_genres_df.copy()
+        genre_key = mg_genre_col
+
+    # group by movie id key (use mg_movie_col)
     movie_genre_list = (
         movie_genre_merged
-        .groupby("movieId")["name"]
+        .groupby(mg_movie_col)[genre_key]
         .apply(list)
     )
 
+    # reindex to include all movies (use movie_col from movies_df)
+    movie_index = movie_col or movies_df.columns[0]
     movie_genre_list = (
         movie_genre_list
-        .reindex(movies_df["id"])
+        .reindex(movies_df[movie_index])
         .apply(lambda x: x if isinstance(x, list) else [])
     )
 
@@ -111,7 +142,7 @@ def build_genre_similarity(
 
     genre_df = pd.DataFrame(
         genre_matrix,
-        index=movies_df["id"],
+        index=movies_df[movie_index],
         columns=mlb.classes_
     )
 
@@ -238,13 +269,15 @@ def build_recommendations_for_user(
     )
 
     recommendations_df = final_scores.reset_index()
-    recommendations_df.columns = ["MovieId", "score"]
+    recommendations_df.columns = ["movie_id", "score"]
 
     recommendations_df["user_id"] = user_id
     recommendations_df["ranking"] = range(
         1,
         len(recommendations_df) + 1
     )
+    recommendations_df = recommendations_df.head(TOP_K).reset_index(drop=True)
+    recommendations_df["ranking"] = range(1, len(recommendations_df) + 1)
 
     return recommendations_df
 

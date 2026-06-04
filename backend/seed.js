@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import 'dotenv/config';
 import axios from 'axios';
 import { appDataSource } from './datasource.js';
@@ -163,7 +164,7 @@ async function seed() {
   await appDataSource.initialize();
   console.log('Base de données co');
 
-  const movies = await fetchMovies(25);
+  const movies = await fetchMovies(20);
   const allGenres = await fetchGenres();
 
   const movieRepository = appDataSource.getRepository(Movie);
@@ -181,7 +182,7 @@ async function seed() {
     genreMap[g.id] = genre;
   }
 
-  const users = await seedUsers(userRepository, 1000);
+  const users = await seedUsers(userRepository, 750);
 
   for (const film of movies) {
     const existing = await movieRepository.findOneBy({ tmdbId: film.id });
