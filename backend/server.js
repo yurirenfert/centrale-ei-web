@@ -5,6 +5,7 @@ import { appDataSource } from './datasource.js';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 import moviesRouter from './routes/movies.js';
+import devRouter from './routes/dev.js';
 import recommandationRouter from './routes/recommandation.js';
 import ratingsRouter from './routes/ratings.js';
 import { startRecommandationJob } from './jobs/recommandationJob.js';
@@ -26,6 +27,7 @@ const startServer = async () => {
   app.use('/movies', moviesRouter);
   app.use('/recommandation', recommandationRouter);
   app.use('/ratings', ratingsRouter);
+  app.use('/dev', devRouter);
 
   // Register 404 middleware and error handler
   app.use(routeNotFoundJsonHandler); // this middleware must be registered after all routes to handle 404 correctly
