@@ -24,11 +24,7 @@ function Movie({ movie }) {
       aria-label={`Voir les details de ${movie.title}`}
     >
       {posterUrl !== null ? (
-        <img
-          className="movie-poster"
-          src={posterUrl}
-          alt={movie.title}
-        />
+        <img className="movie-poster" src={posterUrl} alt={movie.title} />
       ) : (
         <div className="movie-poster movie-poster-placeholder">
           {movie.title}

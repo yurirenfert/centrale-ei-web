@@ -81,7 +81,10 @@ function MovieDetails() {
               <p className="movie-details-tagline">{movie.tagline}</p>
             )}
 
-            <MovieActions className="movie-details-actions" />
+            <MovieActions
+              className="movie-details-actions"
+              movieId={movie.id}
+            />
 
             <div className="movie-details-meta">
               {releaseYear && <span>{releaseYear}</span>}
