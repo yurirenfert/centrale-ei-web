@@ -22,6 +22,7 @@ router.post('/new', async function (req, res) {
   const userId = req.body.user_id;
   const movieId = req.body.movie_id;
   const ratingValue = req.body.rating_value;
+  console.log('BODY:', req.body);
 
   if (
     userId === undefined ||
