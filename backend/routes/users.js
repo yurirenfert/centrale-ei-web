@@ -13,34 +13,6 @@ router.get('/', function (req, res) {
     });
 });
 
-router.post('/new', function (req, res) {
-  const userRepository = appDataSource.getRepository(User);
-  const newUser = userRepository.create({
-    email: req.body.email,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-  });
-
-  userRepository
-    .save(newUser)
-    .then(function (savedUser) {
-      res.status(201).json({
-        message: 'User successfully created',
-        id: savedUser.id,
-      });
-    })
-    .catch(function (error) {
-      console.error(error);
-      if (error.code === '23505') {
-        res.status(400).json({
-          message: `User with email "${newUser.email}" already exists`,
-        });
-      } else {
-        res.status(500).json({ message: 'Error while creating the user' });
-      }
-    });
-});
-
 router.delete('/:userId', function (req, res) {
   appDataSource
     .getRepository(User)
@@ -51,6 +23,19 @@ router.delete('/:userId', function (req, res) {
     .catch(function () {
       res.status(500).json({ message: 'Error while deleting the user' });
     });
+});
+
+router.get('/:userId/recommendations', function (req, res) {
+  const userId = req.params.userId;
+
+  // Pour commencer : fausse reco simple
+  res.json({
+    userId: userId,
+    recommendations: [
+      { id: 1, title: 'Inception' },
+      { id: 2, title: 'Interstellar' },
+    ],
+  });
 });
 
 export default router;
