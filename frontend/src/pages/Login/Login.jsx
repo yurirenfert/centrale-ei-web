@@ -70,7 +70,7 @@ function Login() {
           })
         );
 
-        navigate(`/user/${user.id}/home`);
+        navigate(`/`);
       })
       .catch((error) => {
         console.error('LOGIN ERROR:', error);

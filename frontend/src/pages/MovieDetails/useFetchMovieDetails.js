@@ -11,16 +11,9 @@ export function useFetchMovieDetails(movieId) {
     setMovieLoadingError(null);
 
     axios
-      .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_TOKEN}`,
-        },
-        params: {
-          language: 'fr-FR',
-        },
-      })
+      .get(`${import.meta.env.VITE_BACKEND_URL}/movies/${movieId}`)
       .then((response) => {
-        setMovie(response.data);
+        setMovie(response.data.movie);
       })
       .catch((error) => {
         setMovieLoadingError('Impossible de charger les details du film.');

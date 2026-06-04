@@ -7,14 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 function Home() {
   const navigate = useNavigate();
-  const { userId } = useParams();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
+  console.log('currentUser:', currentUser);
   const [movieSearch, setMovieSearch] = useState('');
   const [visibleCount, setVisibleCount] = useState(20);
 
 
-  const { movies, moviesLoadingError, isMoviesLoading } = useFetchDatabaseMovies(movieSearch, userId);
+  const { movies, moviesLoadingError, isMoviesLoading } = useFetchDatabaseMovies('', currentUser?.id);
 
   const topMovie = movies.reduce((best, m) =>
     (m.popularity > (best?.popularity ?? 0) ? m : best), null
