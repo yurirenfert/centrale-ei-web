@@ -336,19 +336,23 @@ def write_recommendations_to_db(
     )
 
     conn = sqlite3.connect(db_path)
-    cur = conn.cursor()
-
-    cur.executemany(
-        """
-        INSERT OR REPLACE INTO Recommandation
-        (user_id, movie_id, score, ranking)
-        VALUES (?, ?, ?, ?)
-        """,
-        recommendation_tuples
-    )
-
-    conn.commit()
-    conn.close()
+    try:
+        cur = conn.cursor()
+        # start a transaction, delete existing rows (keeps table schema)
+        cur.execute("BEGIN")
+        cur.execute("DELETE FROM Recommandation")
+        if recommendation_tuples:
+            cur.executemany(
+                """
+                INSERT OR REPLACE INTO Recommandation
+                (user_id, movie_id, score, ranking)
+                VALUES (?, ?, ?, ?)
+                """,
+                recommendation_tuples
+            )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 # =============================================================================
