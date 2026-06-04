@@ -23,7 +23,7 @@ function Home() {
 
         if (currentUser && userId) {
           const recommandationResponse = await axios.get(
-            `http://localhost:3000/recommandation/${userId}`
+            `http://localhost:8000/recommandation/${userId}`
           );
 
           const recommandations =
@@ -31,7 +31,7 @@ function Home() {
 
           const moviesResponses = await Promise.all(
             recommandations.map((rec) =>
-              axios.get(`http://localhost:3000/movies/${rec.movie_id}`)
+              axios.get(`http://localhost:8000/movies/${rec.movie_id}`)
             )
           );
 
@@ -42,7 +42,7 @@ function Home() {
           }));
         } else {
           const moviesResponse = await axios.get(
-            'http://localhost:3000/movies'
+            'http://localhost:8000/movies'
           );
 
           moviesToDisplay = moviesResponse.data.movies || [];
