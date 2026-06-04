@@ -2,43 +2,67 @@ import './Home.css';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import Movie from '../../components/Movie/Movie';
-import { useFetchMovies } from './useFetchMovies';
+import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
-  const [movieSearch, setMovieSearch] = useState('');
+  const navigate = useNavigate();
   const { userId } = useParams();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  console.log('currentUser in Home:', userId);
 
-  const { movies, moviesLoadingError } = useFetchMovies(movieSearch, userId);
+  const [movieSearch, setMovieSearch] = useState('');
+  const [visibleCount, setVisibleCount] = useState(20);
+
+
+  const { movies, moviesLoadingError, isMoviesLoading } = useFetchDatabaseMovies(movieSearch, userId);
+
+  const topMovie = movies.reduce((best, m) =>
+    (m.popularity > (best?.popularity ?? 0) ? m : best), null
+  );
 
   return (
     <div className="Home-container">
+
+      {topMovie && (
+        <div className="Hero" style={{ backgroundImage: `url(${topMovie.background_path})` }}>
+          <div className="Hero-overlay" />
+          <div className="Hero-content">
+            <span className="Hero-badge">🏆 Top 1 · Le plus populaire</span>
+            <h1 className="Hero-title">{topMovie.title}</h1>
+            <p className="Hero-overview">{topMovie.overview}</p>
+            <br />
+            <button className='mon-bouton' onClick={() => window.open('https://www.youtube.com/watch?v=p6rbOYH2tGY', '_blank')}>
+              Play Now
+            </button>
+          </div>
+        </div>
+      )}
+
       {currentUser ? (
-        <h1>Recommandations pour {currentUser.nickname}</h1>
+        <h2>Recommandations pour {currentUser.nickname}</h2>
       ) : (
-        <h1>Films populaires</h1>
+        <h2>Films populaires</h2>
       )}
 
       {!currentUser && (
         <p>Connecte-toi pour avoir des recommandations personnalisées.</p>
       )}
 
-      <input
-        className="movie-search-input"
-        type="text"
-        placeholder="Rechercher un film"
-        value={movieSearch}
-        onChange={(event) => setMovieSearch(event.target.value)}
-      />
 
-      <div className="movies-list">
-        {movies.map((movie) => (
-          <Movie key={movie.id} movie={movie} />
-        ))}
-      </div>
+      {isMoviesLoading && <p className="movies-empty-message">Chargement...</p>}
 
-      {movies.length === 0 && moviesLoadingError === null && (
+      {!isMoviesLoading && movies.length > 0 && (
+        <>
+          <div className="movies-list">
+            {movies.slice(0, visibleCount).map((movie) => (
+              <Movie key={movie.id} movie={movie} />
+            ))}
+          </div>
+          
+        </>
+      )}
+
+      {!isMoviesLoading && movies.length === 0 && moviesLoadingError === null && (
         <p className="movies-empty-message">Aucun film trouvé.</p>
       )}
 

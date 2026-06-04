@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'; // ✅ ajouté
 import Movie from '../../components/Movie/Movie';
 import './Discover.css';
-import { useFetchDatabaseMovies } from './useFetchDatabaseMovies';
+import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies';
 
 function Discover() {
   const { movies, moviesLoadingError, isMoviesLoading } = useFetchDatabaseMovies();

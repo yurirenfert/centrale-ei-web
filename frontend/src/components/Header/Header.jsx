@@ -29,21 +29,23 @@ const Header = () => {
         <NavLink className="Header-link" to="/search">
           Rechercher
         </NavLink>
+        </nav>
 
         {currentUser ? (
-          <>
+          <><div className="Header-nav-right">
             <span className="Header-link">{currentUser.nickname}</span>
 
             <button type="button" className="Header-link" onClick={logout}>
               Déconnexion
             </button>
+            </div>
           </>
-        ) : (
+        ) : (<div className="Header-nav-right">
           <NavLink className="Header-link" to="/login">
             Connexion
           </NavLink>
+          </div>
         )}
-      </nav>
     </header>
   );
 };
