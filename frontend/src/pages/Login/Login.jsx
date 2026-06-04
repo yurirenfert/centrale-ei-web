@@ -74,7 +74,7 @@ function Login() {
       })
       .catch((error) => {
         console.error('LOGIN ERROR:', error);
-        setLoginError('Impossible de charger les utilisateurs.');
+        setLoginError('Adresse email non reconnue.');
       });
   };
 
@@ -90,7 +90,6 @@ function Login() {
     <main className="AuthPage">
       <section className="AuthPage-panel">
         <div className="AuthPage-copy">
-          <p className="AuthPage-kicker">Proof of concept</p>
           <h1>Connexion</h1>
           <p>Connecte-toi avec ton mail pour retrouver ton profil Flouflix.</p>
         </div>

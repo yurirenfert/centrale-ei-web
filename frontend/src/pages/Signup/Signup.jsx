@@ -36,9 +36,7 @@ function Signup() {
         });
       })
       .catch((error) => {
-        setSignupError(
-          'Impossible de creer ce compte. Ce mail existe peut-etre deja.'
-        );
+        setSignupError('Cet email est déja associé à un compte.');
         console.error(error);
       });
   };
