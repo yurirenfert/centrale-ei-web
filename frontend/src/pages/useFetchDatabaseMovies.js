@@ -12,7 +12,6 @@ export function useFetchDatabaseMovies(search = '', currentUser = null) {
     setMoviesLoadingError(null);
     setVisibleCount(28);
 
-
     const timeoutId = setTimeout(() => {
       axios
         .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
@@ -20,11 +19,11 @@ export function useFetchDatabaseMovies(search = '', currentUser = null) {
           const allMovies = response.data.movies;
           const cleanSearch = search.trim().toLowerCase();
 
-
           const filtered = cleanSearch
-            ? allMovies.filter(m => m.title.toLowerCase().includes(cleanSearch))
+            ? allMovies.filter((m) =>
+                m.title.toLowerCase().includes(cleanSearch)
+              )
             : allMovies;
-
 
           if (currentUser) {
             filtered.sort((a, b) => b.popularity - a.popularity);
@@ -41,7 +40,7 @@ export function useFetchDatabaseMovies(search = '', currentUser = null) {
         });
     }, 300);
 
-    return () => clearTimeout(timeoutId); 
+    return () => clearTimeout(timeoutId);
   }, [search, currentUser]);
 
   return { movies, moviesLoadingError, isMoviesLoading, visibleCount };
