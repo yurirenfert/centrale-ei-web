@@ -13,7 +13,6 @@ function Home() {
   const { movies, moviesLoadingError } = useFetchMovies(movieSearch, userId);
 
   return (
-    
     <div className="Home-container">
       {currentUser ? (
         <h1>Recommandations pour {currentUser.nickname}</h1>
