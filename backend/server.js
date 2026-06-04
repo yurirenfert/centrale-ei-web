@@ -22,7 +22,6 @@ const startServer = async () => {
 
   // Register routes
   app.use('/', indexRouter);
-  app.use('/dev', devRouter);
   app.use('/users', usersRouter);
   app.use('/movies', moviesRouter);
   app.use('/recommandation', recommandationRouter);
