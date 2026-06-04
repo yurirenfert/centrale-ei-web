@@ -7,6 +7,7 @@ import usersRouter from './routes/users.js';
 import moviesRouter from './routes/movies.js';
 import recommandationRouter from './routes/recommandation.js';
 import ratingsRouter from './routes/ratings.js';
+import { startRecommandationJob } from './jobs/recommandationJob.js';
 import { jsonErrorHandler } from './services/jsonErrorHandler.js';
 import { routeNotFoundJsonHandler } from './services/routeNotFoundJsonHandler.js';
 
@@ -29,6 +30,8 @@ const startServer = async () => {
   // Register 404 middleware and error handler
   app.use(routeNotFoundJsonHandler); // this middleware must be registered after all routes to handle 404 correctly
   app.use(jsonErrorHandler); // this error handler must be registered after all middleware to catch all errors
+
+  startRecommandationJob();
 
   const port = parseInt(process.env.PORT || '8000');
 
