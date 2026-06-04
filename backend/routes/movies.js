@@ -16,9 +16,9 @@ router.get('/', function (req, res) {
 router.get('/:id', function (req, res) {
   appDataSource
     .getRepository(Movie)
-    .findOne({ 
-      where: { tmdbId: parseInt(req.params.id) }, 
-      relations: ['genres']
+    .findOne({
+      where: { tmdbId: parseInt(req.params.id) },
+      relations: ['genres'],
     })
     .then(function (movie) {
       if (movie === null) {
