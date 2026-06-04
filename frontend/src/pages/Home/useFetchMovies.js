@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export function useFetchMovies(movieSearch, currentuser) {
+export function useFetchMovies(movieSearch, currentUser) {
   const [movies, setMovies] = useState([]);
   const [moviesLoadingError, setMoviesLoadingError] = useState(null);
 
@@ -11,7 +11,7 @@ export function useFetchMovies(movieSearch, currentuser) {
       const isSearchingMovie = cleanMovieSearch !== '';
       let request;
 
-      if (currentuser && !isSearchingMovie) {
+      if (currentUser && !isSearchingMovie) {
         request = axios.get('https://api.themoviedb.org/3/movie/popular', {
           headers: {
             Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_TOKEN}`,

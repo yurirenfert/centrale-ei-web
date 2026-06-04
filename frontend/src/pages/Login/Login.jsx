@@ -30,37 +30,56 @@ function Login() {
 
   const loginWithEmail = (event) => {
     event.preventDefault();
+    console.log('CLICK LOGIN');
+    console.log('EMAIL:', formValues.email);
+    console.log('BACKEND:', import.meta.env.VITE_BACKEND_URL);
+
     setLoginError(null);
     setLoginSuccess(null);
 
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/users`)
       .then((response) => {
-        const user = response.data.users.find(
+        console.log('USERS RESPONSE:', response.data);
+
+        const users = response.data.users || response.data;
+
+        const user = users.find(
           (currentUser) => currentUser.email === formValues.email.trim()
         );
+
+        console.log('FOUND USER:', user);
+        console.log('USER NICKNAME:', user.nickname);
 
         if (user === undefined) {
           navigate('/signup', {
             state: { email: formValues.email },
           });
+
           return;
         }
 
-        const profile = buildProfile({
-          user,
-        });
+        const profile = buildProfile({ user });
 
-        setSavedProfile(profile);
-        setLoginSuccess('Connexion effectuee.');
+        localStorage.setItem(
+          'currentUser',
+          JSON.stringify({
+            id: user.id,
+            email: user.email,
+            nickname: user.nickname,
+          })
+        );
+
+        navigate(`/user/${user.id}/home`);
       })
       .catch((error) => {
+        console.error('LOGIN ERROR:', error);
         setLoginError('Impossible de charger les utilisateurs.');
-        console.error(error);
       });
   };
 
   const clearProfile = () => {
+    localStorage.removeItem('currentUser');
     setSavedProfile(null);
     setFormValues(DEFAULT_FORM_VALUES);
     setLoginError(null);
@@ -73,9 +92,7 @@ function Login() {
         <div className="AuthPage-copy">
           <p className="AuthPage-kicker">Proof of concept</p>
           <h1>Connexion</h1>
-          <p>
-            Connecte-toi avec ton mail pour retrouver ton profil Flouflix.
-          </p>
+          <p>Connecte-toi avec ton mail pour retrouver ton profil Flouflix.</p>
         </div>
 
         <div className="AuthPage-formArea">
