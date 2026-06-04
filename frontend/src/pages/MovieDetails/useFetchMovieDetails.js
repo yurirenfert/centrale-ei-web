@@ -13,7 +13,7 @@ export function useFetchMovieDetails(movieId) {
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/movies/${movieId}`)
       .then((response) => {
-        setMovie(response.data.movie);
+        setMovie(response.data.movie || response.data);
       })
       .catch((error) => {
         setMovieLoadingError('Impossible de charger les details du film.');

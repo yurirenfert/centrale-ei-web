@@ -4,7 +4,7 @@ import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './Movie.css';
 
 function Movie({ movie }) {
-  const movieDetailsId = movie.tmdbId || movie.id;
+  const movieDetailsId = movie.id;
   const releaseYear = movie.release_date?.slice(0, 4) || 'Date inconnue';
   const rating =
     typeof movie.vote_average === 'number'
@@ -16,6 +16,9 @@ function Movie({ movie }) {
   const backdropUrl = movie.backdrop_path
     ? `${TMDB_IMAGE_BASE_URL}/w780${movie.backdrop_path}`
     : posterUrl;
+  console.log('MOVIE CARD:', movie);
+  console.log('LINK MOVIE ID:', movie.id);
+  console.log('LINK TMDB ID:', movie.tmdbId);
 
   return (
     <Link
@@ -24,11 +27,7 @@ function Movie({ movie }) {
       aria-label={`Voir les details de ${movie.title}`}
     >
       {posterUrl !== null ? (
-        <img
-          className="movie-poster"
-          src={posterUrl}
-          alt={movie.title}
-        />
+        <img className="movie-poster" src={posterUrl} alt={movie.title} />
       ) : (
         <div className="movie-poster movie-poster-placeholder">
           {movie.title}

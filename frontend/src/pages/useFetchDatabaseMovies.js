@@ -13,45 +13,35 @@ export function useFetchDatabaseMovies(search = '', userId = null) {
     setVisibleCount(28);
 
     const timeoutId = setTimeout(() => {
-      if (userId) {
-        axios
-          .get(`${import.meta.env.VITE_BACKEND_URL}/recommendations/${userId}`)
-          .then((response) => {
-            const recommendedMovies = response.data.recommandations.map(
-              (r) => r.movie
-            );
-            setMovies(recommendedMovies);
-          })
-          .catch(() => {
-            axios
-              .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
-              .then((response) => setMovies(response.data.movies))
-              .finally(() => setIsMoviesLoading(false));
-          })
-          .finally(() => setIsMoviesLoading(false));
-      } else {
-        axios
-          .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
-          .then((response) => {
-            const allMovies = response.data.movies;
-            const cleanSearch = search.trim().toLowerCase();
-            const filtered = cleanSearch
-              ? allMovies.filter((m) =>
-                  m.title.toLowerCase().includes(cleanSearch)
-                )
-              : allMovies;
-            setMovies(filtered);
-          })
-          .catch((error) => {
-            setMoviesLoadingError('Impossible de charger les films.');
-            console.error(error);
-          })
-          .finally(() => setIsMoviesLoading(false));
-      }
+      axios
+        .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
+        .then((response) => {
+          const allMovies = response.data.movies;
+          const cleanSearch = search.trim().toLowerCase();
+
+          const filtered = cleanSearch
+            ? allMovies.filter((m) =>
+                m.title.toLowerCase().includes(cleanSearch)
+              )
+            : allMovies;
+
+          if (currentUser) {
+            filtered.sort((a, b) => b.popularity - a.popularity);
+          }
+
+          setMovies(filtered);
+        })
+        .catch((error) => {
+          setMoviesLoadingError('Impossible de charger les films de la DB.');
+          console.error(error);
+        })
+        .finally(() => {
+          setIsMoviesLoading(false);
+        });
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [search, userId]);
+  }, [search, currentUser]);
 
   return { movies, moviesLoadingError, isMoviesLoading, visibleCount };
 }

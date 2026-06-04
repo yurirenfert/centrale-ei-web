@@ -22,6 +22,7 @@ router.post('/new', async function (req, res) {
   const userId = req.body.user_id;
   const movieId = req.body.movie_id;
   const ratingValue = req.body.rating_value;
+  console.log('BODY:', req.body);
 
   if (
     userId === undefined ||
@@ -49,7 +50,6 @@ router.post('/new', async function (req, res) {
       movie_id: movieId,
     });
     if (existing) {
-      // remove previous rating first to avoid UNIQUE/constraint races
       await ratingRepository.delete({ user_id: userId, movie_id: movieId });
       console.log(
         `Existing rating found for user ${userId} and movie ${movieId}, replaced.`
