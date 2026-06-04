@@ -1,28 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
 import MovieActions from '../../components/MovieActions/MovieActions';
-import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './MovieDetails.css';
 import { useFetchMovieDetails } from './useFetchMovieDetails';
 
-function formatRuntime(runtime) {
-  if (typeof runtime !== 'number' || runtime <= 0) {
-    return null;
-  }
-
-  const hours = Math.floor(runtime / 60);
-  const minutes = runtime % 60;
-
-  if (hours === 0) {
-    return `${minutes} min`;
-  }
-
-  return `${hours} h ${minutes} min`;
-}
-
 function MovieDetails() {
   const { movieId } = useParams();
-  const { movie, movieLoadingError, isMovieLoading } =
-    useFetchMovieDetails(movieId);
+  const { movie, movieLoadingError, isMovieLoading } = useFetchMovieDetails(movieId);
 
   if (isMovieLoading) {
     return <p className="movie-details-status">Chargement du film...</p>;
@@ -36,18 +19,10 @@ function MovieDetails() {
     return <p className="movie-details-status">Film introuvable.</p>;
   }
 
-  const backdropUrl = movie.backdrop_path
-    ? `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path}`
-    : null;
-  const posterUrl = movie.poster_path
-    ? `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
-    : null;
+  const backdropUrl = movie.background_path ?? null;
+  const posterUrl = movie.poster_path ?? null;
   const releaseYear = movie.release_date?.slice(0, 4);
-  const runtime = formatRuntime(movie.runtime);
-  const rating =
-    typeof movie.vote_average === 'number'
-      ? `${movie.vote_average.toFixed(1)}/10`
-      : null;
+  const rating = typeof movie.globalrating === 'number' ? `${movie.globalrating.toFixed(1)}/10` : null;
 
   return (
     <main className="movie-details-page">
@@ -77,15 +52,11 @@ function MovieDetails() {
 
           <div className="movie-details-copy">
             <h1>{movie.title}</h1>
-            {movie.tagline && (
-              <p className="movie-details-tagline">{movie.tagline}</p>
-            )}
 
             <MovieActions className="movie-details-actions" />
 
             <div className="movie-details-meta">
               {releaseYear && <span>{releaseYear}</span>}
-              {runtime && <span>{runtime}</span>}
               {rating && <span>{rating}</span>}
               <span>HD</span>
             </div>

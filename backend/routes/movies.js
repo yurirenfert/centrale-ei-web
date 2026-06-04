@@ -16,7 +16,10 @@ router.get('/', function (req, res) {
 router.get('/:id', function (req, res) {
   appDataSource
     .getRepository(Movie)
-    .findOneBy({ id: req.params.id })
+    .findOne({ 
+      where: { tmdbId: parseInt(req.params.id) }, 
+      relations: ['genres']
+    })
     .then(function (movie) {
       if (movie === null) {
         res.status(404).json({ message: 'Movie not found' });

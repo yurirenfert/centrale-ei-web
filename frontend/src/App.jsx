@@ -25,7 +25,6 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="about" element={<About />} />
         <Route path="dev" element={<Dev />} />
-        <Route path="/user/:userId/home" element={<Home />} />
       </Routes>
     </Layout>
   );
