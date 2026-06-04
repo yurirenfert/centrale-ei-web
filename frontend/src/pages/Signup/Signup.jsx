@@ -21,14 +21,14 @@ function Signup() {
   };
 
   const createAccount = (event) => {
+    console.log('CLICK SIGNUP');
     event.preventDefault();
     setSignupError(null);
 
     axios
-      .post(`${import.meta.env.VITE_BACKEND_URL}/users/new`, {
+      .post(`${import.meta.env.VITE_BACKEND_URL}/dev/new`, {
         email: formValues.email.trim(),
-        firstname: formValues.displayName.trim(),
-        lastname: '',
+        nickname: formValues.displayName.trim(),
       })
       .then(() => {
         navigate('/login', {
@@ -36,9 +36,7 @@ function Signup() {
         });
       })
       .catch((error) => {
-        setSignupError(
-          'Impossible de creer ce compte. Ce mail existe peut-etre deja.'
-        );
+        setSignupError('Cet email est déja associé à un compte.');
         console.error(error);
       });
   };
