@@ -11,7 +11,13 @@
 .Header-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 200px;
+  flex: 1; 
+  justify-content: center; 
+}
+
+.Header-nav-right {
+  margin-left: auto; 
 }
 
 .Header-link {
@@ -53,10 +59,20 @@
 
   .Header-link {
     font-size: 13px;
+    text-decoration: none;
   }
 
   .Header-logo {
     width: 142px;
     transform: translateY(6px);
   }
+}
+
+.Header-nav-right .Header-link {
+  color: #b3b3b3;
+  text-decoration: none;
+}
+
+.Header-nav-right .Header-link:hover {
+  color: #fff;
 }

@@ -17,10 +17,12 @@ const Header = () => {
         <NavLink className="Header-link" to="/search">
           Rechercher
         </NavLink>
+        </nav>
+        <div className="Header-nav-right">
         <NavLink className="Header-link" to="/login">
           Connexion
         </NavLink>
-      </nav>
+        </div>
     </header>
   );
 };
