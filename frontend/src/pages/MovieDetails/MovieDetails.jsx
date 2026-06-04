@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MovieActions from '../../components/MovieActions/MovieActions';
 import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './MovieDetails.css';
@@ -21,6 +21,8 @@ function formatRuntime(runtime) {
 
 function MovieDetails() {
   const { movieId } = useParams();
+  const navigate = useNavigate();
+
   const { movie, movieLoadingError, isMovieLoading } =
     useFetchMovieDetails(movieId);
 
@@ -39,11 +41,14 @@ function MovieDetails() {
   const backdropUrl = movie.backdrop_path
     ? `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path}`
     : null;
+
   const posterUrl = movie.poster_path
     ? `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
     : null;
+
   const releaseYear = movie.release_date?.slice(0, 4);
   const runtime = formatRuntime(movie.runtime);
+
   const rating =
     typeof movie.vote_average === 'number'
       ? `${movie.vote_average.toFixed(1)}/10`
@@ -59,12 +64,17 @@ function MovieDetails() {
           aria-hidden="true"
         />
       )}
+
       <div className="movie-details-overlay" />
 
       <section className="movie-details-content">
-        <Link className="movie-details-back-link" to="/">
+        <button
+          type="button"
+          className="movie-details-back-link"
+          onClick={() => navigate(-1)}
+        >
           Retour
-        </Link>
+        </button>
 
         <div className="movie-details-main">
           {posterUrl !== null && (
@@ -77,6 +87,7 @@ function MovieDetails() {
 
           <div className="movie-details-copy">
             <h1>{movie.title}</h1>
+
             {movie.tagline && (
               <p className="movie-details-tagline">{movie.tagline}</p>
             )}
