@@ -13,8 +13,10 @@ function Home() {
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
     null
   );
-  const comedyMovies = movies.filter(m => m.genres?.some(g => g.name === 'Comedy'));
-  const actionMovies = movies.filter(m => m.genres?.some(g => g.name === 'Action'));
+  const { movies: allMovies } = useFetchDatabaseMovies('', null);
+  const comedyMovies = allMovies.filter(m => m.genres?.some(g => g.name === 'Comedy'));
+  const actionMovies = allMovies.filter(m => m.genres?.some(g => g.name === 'Action'));
+
   return (
     <div className="Home-container">
       {topMovie && (
@@ -68,7 +70,7 @@ function Home() {
       <>
         <h2>Comédies</h2>
         <div className="movies-list">
-          {comedyMovies.map((movie) => (
+          {comedyMovies.slice(0, visibleCount).map((movie) => (
             <Movie key={movie.id} movie={movie} />
           ))}
         </div>
@@ -79,7 +81,7 @@ function Home() {
       <>
         <h2>Action</h2>
         <div className="movies-list">
-          {actionMovies.map((movie) => (
+          {actionMovies.slice(0, visibleCount).map((movie) => (
             <Movie key={movie.id} movie={movie} />
           ))}
         </div>

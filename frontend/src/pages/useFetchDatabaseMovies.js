@@ -20,31 +20,31 @@ export function useFetchDatabaseMovies(search = '', userId = null) {
             : `${import.meta.env.VITE_BACKEND_URL}/movies`
         )
         .then((response) => {
-          let moviesToDisplay = [];
-
           if (userId) {
             const recommandations =
               response.data.recommandations ||
               response.data.recommandation ||
               [];
+            const moviesToDisplay = recommandations.map((r) => r.movie).filter(Boolean);
 
-            moviesToDisplay = recommandations
-              .map((r) => r.movie)
-              .filter(Boolean);
+            if (moviesToDisplay.length === 0) {
+              return axios
+                .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
+                .then((moviesResponse) => {
+                  setMovies(moviesResponse.data.movies || []);
+                });
+            }
+            setMovies(moviesToDisplay);
+
           } else {
-            moviesToDisplay = response.data.movies || [];
+            // ✅ filtre par search ici
+            const allMovies = response.data.movies || [];
+            const cleanSearch = search.trim().toLowerCase();
+            const filtered = cleanSearch
+              ? allMovies.filter(m => m.title.toLowerCase().includes(cleanSearch))
+              : allMovies;
+            setMovies(filtered);
           }
-
-          if (moviesToDisplay.length === 0) {
-            return axios
-              .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
-              .then((moviesResponse) => {
-                const allMovies = moviesResponse.data.movies || [];
-                setMovies(allMovies);
-              });
-          }
-
-          setMovies(moviesToDisplay);
         })
         .catch((error) => {
           console.error(error);
