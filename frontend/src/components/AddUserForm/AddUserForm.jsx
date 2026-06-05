@@ -4,8 +4,7 @@ import './AddUserForm.css';
 
 const DEFAULT_FORM_VALUES = {
   email: '',
-  firstname: '',
-  lastname: '',
+  nickname: '',
 };
 
 function AddUserForm({ onSuccessfulUserCreation }) {
@@ -28,7 +27,7 @@ function AddUserForm({ onSuccessfulUserCreation }) {
     setUserCreationError(null);
 
     axios
-      .post(`${import.meta.env.VITE_BACKEND_URL}/users/new`, formValues)
+      .post(`${import.meta.env.VITE_BACKEND_URL}/dev/new`, formValues)
       .then(() => {
         displayCreationSuccessMessage();
         setFormValues(DEFAULT_FORM_VALUES);
@@ -55,18 +54,10 @@ function AddUserForm({ onSuccessfulUserCreation }) {
         />
         <input
           className="add-user-input"
-          placeholder="First name"
-          value={formValues.firstname}
+          placeholder="Nickname"
+          value={formValues.nickname}
           onChange={(event) =>
-            setFormValues({ ...formValues, firstname: event.target.value })
-          }
-        />
-        <input
-          className="add-user-input"
-          placeholder="Last name"
-          value={formValues.lastname}
-          onChange={(event) =>
-            setFormValues({ ...formValues, lastname: event.target.value })
+            setFormValues({ ...formValues, nickname: event.target.value })
           }
         />
         <button className="add-user-button" type="submit">
