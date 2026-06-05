@@ -37,8 +37,18 @@
   height: 19px;
 }
 
-.movie-action-error {
-  color: #f87171;
-  font-size: 12px;
-  font-weight: 700;
+.movie-action-selected {
+  background-color: white;
+  color: black;
+  border-color: white;
+}
+
+.movie-action-selected {
+  background-color: white;
+  color: black;
+  border-color: white;
+}
+
+.movie-action-unselected {
+  opacity: 0.35;
 }

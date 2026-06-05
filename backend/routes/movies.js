@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', function (req, res) {
   appDataSource
     .getRepository(Movie)
-    .find({})
+    .find({ relations: ['genres'] })
     .then(function (movies) {
       res.json({ movies: movies });
     });
@@ -29,7 +29,10 @@ router.get('/tmdb/:tmdbId', function (req, res) {
 router.get('/:id', function (req, res) {
   appDataSource
     .getRepository(Movie)
-    .findOneBy({ id: req.params.id })
+    .findOne({ 
+      where: { id: parseInt(req.params.id) }, 
+      relations: ['genres']
+    })
     .then(function (movie) {
       if (movie === null) {
         res.status(404).json({ message: 'Movie not found' });
@@ -41,19 +44,19 @@ router.get('/:id', function (req, res) {
 
 router.post('/new', function (req, res) {
   const movieRepository = appDataSource.getRepository(Movie);
-  const tmdbId = req.body.tmdbId || req.body.id;
+  const Id = req.body.id;
   const title = req.body.title || req.body.name;
 
-  if (tmdbId === undefined || title === undefined) {
+  if (id === undefined || title === undefined) {
     res.status(400).json({
-      message: 'tmdbId and title are required',
+      message: 'id and title are required',
     });
 
     return;
   }
 
   const newMovie = movieRepository.create({
-    tmdbId: tmdbId,
+    id: id,
     title: title,
     release_date:
       req.body.release_date || req.body.releaseDate || req.body.date,

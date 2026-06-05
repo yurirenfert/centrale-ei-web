@@ -1,22 +1,16 @@
 import { Link } from 'react-router-dom';
 import MovieActions from '../MovieActions/MovieActions';
-import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './Movie.css';
 
 function Movie({ movie }) {
-  const movieDetailsId = movie.tmdbId || movie.id;
+  const movieDetailsId = movie.id;
   const releaseYear = movie.release_date?.slice(0, 4) || 'Date inconnue';
   const rating =
     typeof movie.vote_average === 'number'
       ? `${movie.vote_average.toFixed(1)}/10`
       : 'Non note';
-  const posterUrl = movie.poster_path
-    ? `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
-    : null;
-  const backdropUrl = movie.backdrop_path
-    ? `${TMDB_IMAGE_BASE_URL}/w780${movie.backdrop_path}`
-    : posterUrl;
-
+  const posterUrl = movie.poster_path ?? null;
+  const backdropUrl = movie.background_path ?? posterUrl;
   return (
     <Link
       className="movie-card"
@@ -24,11 +18,7 @@ function Movie({ movie }) {
       aria-label={`Voir les details de ${movie.title}`}
     >
       {posterUrl !== null ? (
-        <img
-          className="movie-poster"
-          src={posterUrl}
-          alt={movie.title}
-        />
+        <img className="movie-poster" src={posterUrl} alt={movie.title} />
       ) : (
         <div className="movie-poster movie-poster-placeholder">
           {movie.title}

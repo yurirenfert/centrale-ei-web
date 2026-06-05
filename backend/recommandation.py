@@ -1,181 +1,407 @@
 import sqlite3
+import os
+import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MultiLabelBinarizer
-import numpy as np
-
-# Connect to the SQLite database
-# Replace with the actual path to your SQLite database
-db_path = "/Users/emmanueldelache/Downloads/Git-Projet-ST4/centrale-ei-web/backend/database.sqlite3"
-conn = sqlite3.connect(db_path)
-
-# Query the User table
-user_query = "SELECT * FROM User"
-users_df = pd.read_sql_query(user_query, conn)
-
-# Query the Movie table
-movie_query = "SELECT * FROM Movie"
-movies_df = pd.read_sql_query(movie_query, conn)
-
-# Query the Rating table
-rating_query = "SELECT * FROM Rating"
-ratings_df = pd.read_sql_query(rating_query, conn)
-
-# Query the Movie-Genre table
-movie_genre_query = "SELECT * FROM Movie_Genres_Genre"
-movies_genres_df = pd.read_sql_query(movie_genre_query, conn)
-
-# Query the Genre table
-genre_query = "SELECT * FROM Genre"
-genres_df = pd.read_sql_query(genre_query, conn)
-
-# Close the database connection
-conn.close()
 
 
-user_movie_matrix = ratings_df.pivot(
-    index='userId', columns='movieId', values='rating').fillna(0)
-user_similarity = cosine_similarity(user_movie_matrix)
-np.fill_diagonal(user_similarity, 0)
-user_similarity_df = pd.DataFrame(
-    user_similarity, index=user_movie_matrix.index, columns=user_movie_matrix.index)
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
 
-movies_similarity = cosine_similarity(user_movie_matrix.T)
-np.fill_diagonal(movies_similarity, 0)
-movies_similarity_df = pd.DataFrame(
-    movies_similarity, index=user_movie_matrix.columns, columns=user_movie_matrix.columns)
+DB_PATH = os.path.join(os.path.dirname(__file__), "database.sqlite3")
 
-movie_genre_merged = movies_genres_df.merge(
-    genres_df,
-    left_on="genre_id",
-    right_on="genre_id")
+# Item similarity weights
+ALPHA = 0.6  # Collaborative filtering
+BETA = 0.4   # Genre similarity
 
-movie_genre_list = movie_genre_merged.groupby(
-    "movieId")["genre_name"].apply(list)
-movie_genre_list = movie_genre_list.reindex(movies_df["movieId"]).fillna([])
+# Final recommendation weights
+GAMMA = 0.65  # User-based prediction
+DELTA = 0.45  # Item-based prediction
 
-mlb = MultiLabelBinarizer()
-
-genre_matrix = mlb.fit_transform(movie_genre_list)
-
-genre_df = pd.DataFrame(
-    genre_matrix, index=movies_df["movieId"], columns=mlb.classes_)
-
-genre_similarity = cosine_similarity(genre_df)
-np.fill_diagonal(genre_similarity, 0)
-
-genre_similarity_df = pd.DataFrame(
-    genre_similarity, index=genre_df.index, columns=genre_df.index)
-
-alpha = 0.7  # collaborative filtering
-beta = 0.3   # genres
-gamma = 0.6  # user similarity
-delta = 0.4  # item similarity
-
-final_movie_similarity = (
-    alpha * movies_similarity_df +
-    beta * genre_similarity_df
-)
+# How many recommendations to generate per user
+TOP_K = 25
 
 
-def predict_user_based(user_id):
-    sim_users = user_similarity_df[user_id]
+# =============================================================================
+# DATA LOADING
+# =============================================================================
 
-    # enlever soi-même
-    sim_users = sim_users.drop(user_id)
+def load_data(db_path):
+    conn = sqlite3.connect(db_path)
 
-    # users les plus similaires
-    top_users = sim_users.sort_values(ascending=False).head(20)
+    users_df = pd.read_sql_query("SELECT * FROM User", conn)
+    movies_df = pd.read_sql_query("SELECT * FROM Movie", conn)
+    ratings_df = pd.read_sql_query("SELECT * FROM Rating", conn)
+    movies_genres_df = pd.read_sql_query(
+        "SELECT * FROM Movie_Genres_Genre", conn)
+    genres_df = pd.read_sql_query("SELECT * FROM Genre", conn)
 
-    # ratings des autres users
+    conn.close()
+
+    return (
+        users_df,
+        movies_df,
+        ratings_df,
+        movies_genres_df,
+        genres_df,
+    )
+
+
+# =============================================================================
+# SIMILARITY MATRICES
+# =============================================================================
+
+def _pick_col(df, candidates):
+    for c in candidates:
+        if c in df.columns:
+            return c
+    return None
+
+def build_user_movie_matrix(ratings_df):
+    return ratings_df.pivot(
+        index="user_id",
+        columns="movie_id",
+        values="rating_value"
+    ).fillna(0)
+
+
+def build_user_similarity(user_movie_matrix):
+    similarity = cosine_similarity(user_movie_matrix)
+
+    np.fill_diagonal(similarity, 0)
+
+    return pd.DataFrame(
+        similarity,
+        index=user_movie_matrix.index,
+        columns=user_movie_matrix.index
+    )
+
+
+def build_movie_similarity(user_movie_matrix):
+    similarity = cosine_similarity(user_movie_matrix.T)
+
+    np.fill_diagonal(similarity, 0)
+
+    return pd.DataFrame(
+        similarity,
+        index=user_movie_matrix.columns,
+        columns=user_movie_matrix.columns
+    )
+
+
+def build_genre_similarity(
+    movies_df,
+    movies_genres_df,
+    genres_df
+):
+    # pick actual column names present in your dataframes
+    movie_col = _pick_col(movies_df, ["movie_id", "movieId", "id"])
+    mg_movie_col = _pick_col(movies_genres_df, ["movie_id", "movieId", "movieId_id", "movieId"])
+    mg_genre_col = _pick_col(movies_genres_df, ["genre_id", "genreId", "genreId_id", "genreId"])
+    genre_id_col = _pick_col(genres_df, ["id", "genre_id", "genreId"])
+    genre_name_col = _pick_col(genres_df, ["name", "title", "genre"])
+
+    # safe merge: use discovered column names
+    if mg_movie_col is None or mg_genre_col is None:
+        # fallback: try common names
+        mg_movie_col = mg_movie_col or movies_genres_df.columns[0]
+        mg_genre_col = mg_genre_col or movies_genres_df.columns[1]
+
+    if genre_id_col and genre_name_col and genre_id_col in genres_df.columns:
+        movie_genre_merged = movies_genres_df.merge(
+            genres_df[[genre_id_col, genre_name_col]],
+            left_on=mg_genre_col,
+            right_on=genre_id_col,
+            how="left"
+        )
+        genre_key = genre_name_col
+    else:
+        movie_genre_merged = movies_genres_df.copy()
+        genre_key = mg_genre_col
+
+    # group by movie id key (use mg_movie_col)
+    movie_genre_list = (
+        movie_genre_merged
+        .groupby(mg_movie_col)[genre_key]
+        .apply(list)
+    )
+
+    # reindex to include all movies (use movie_col from movies_df)
+    movie_index = movie_col or movies_df.columns[0]
+    movie_genre_list = (
+        movie_genre_list
+        .reindex(movies_df[movie_index])
+        .apply(lambda x: x if isinstance(x, list) else [])
+    )
+
+    mlb = MultiLabelBinarizer()
+
+    genre_matrix = mlb.fit_transform(movie_genre_list)
+
+    genre_df = pd.DataFrame(
+        genre_matrix,
+        index=movies_df[movie_index],
+        columns=mlb.classes_
+    )
+
+    similarity = cosine_similarity(genre_df)
+
+    np.fill_diagonal(similarity, 0)
+
+    return pd.DataFrame(
+        similarity,
+        index=genre_df.index,
+        columns=genre_df.index
+    )
+
+
+def build_final_movie_similarity(
+    movie_similarity_df,
+    genre_similarity_df
+):
+    return (
+        ALPHA * movie_similarity_df +
+        BETA * genre_similarity_df
+    )
+
+
+# =============================================================================
+# PREDICTION
+# =============================================================================
+
+def predict_user_based(
+    user_id,
+    user_movie_matrix,
+    user_similarity_df
+):
+    sim_users = user_similarity_df[user_id].drop(user_id)
+
+    top_users = (
+        sim_users
+        .sort_values(ascending=False)
+        .head(20)
+    )
+
     ratings = user_movie_matrix.loc[top_users.index]
 
-    # weighted sum
     scores = top_users.values @ ratings
-
     norm = np.sum(np.abs(top_users.values))
 
-    return scores / (norm + 1e-8)
+    return pd.Series(
+        scores / (norm + 1e-8),
+        index=user_movie_matrix.columns
+    )
 
 
-def predict_item_based(user_id):
+def predict_item_based(
+    user_id,
+    user_movie_matrix,
+    final_movie_similarity
+):
     user_ratings = user_movie_matrix.loc[user_id]
 
-    # films que l'utilisateur a notés
     rated_items = user_ratings[user_ratings != 0]
 
     scores = {}
 
     for movie_id in final_movie_similarity.index:
+        sim_vector = final_movie_similarity.loc[
+            movie_id,
+            rated_items.index
+        ]
 
-        sim_vector = final_movie_similarity.loc[movie_id, rated_items.index]
+        numerator = np.sum(
+            sim_vector.values * rated_items.values
+        )
 
-        numerator = np.sum(sim_vector.values * rated_items.values)
-        denominator = np.sum(np.abs(sim_vector.values)) + 1e-8
+        denominator = (
+            np.sum(np.abs(sim_vector.values))
+            + 1e-8
+        )
 
         scores[movie_id] = numerator / denominator
 
     return pd.Series(scores)
 
 
-def build_recommendations_for_user(user_id, alpha=0.3, beta=0.7):
+# =============================================================================
+# RECOMMENDATION GENERATION
+# =============================================================================
 
-    user_scores = predict_user_based(user_id)
-    item_scores = predict_item_based(user_id)
+def build_recommendations_for_user(
+    user_id,
+    user_movie_matrix,
+    user_similarity_df,
+    final_movie_similarity
+):
+    user_scores = predict_user_based(
+        user_id,
+        user_movie_matrix,
+        user_similarity_df
+    )
 
-    # align
+    item_scores = predict_item_based(
+        user_id,
+        user_movie_matrix,
+        final_movie_similarity
+    )
+
     user_scores = user_scores.fillna(0)
     item_scores = item_scores.fillna(0)
 
-    final_scores = gamma * user_scores + delta * item_scores
-
-    # remove seen
-    seen = user_movie_matrix.loc[user_id]
-    seen = seen[seen != 0].index
-    final_scores = final_scores.drop(seen, errors="ignore")
-
-    # ranking
-    final_scores = final_scores.sort_values(ascending=False)
-
-    df = final_scores.reset_index()
-    df.columns = ["movie_id", "score"]
-    df["user_id"] = user_id
-    df["ranking"] = range(1, len(df) + 1)
-
-    return df
-
-
-all_users = user_movie_matrix.index
-
-all_recs = []
-
-for user_id in all_users:
-    df = build_recommendations_for_user(user_id)
-    all_recs.append(df)
-
-final_df = pd.concat(all_recs)
-
-
-def write_recommendations_to_db(recs_df, db_path):
-
-    cols = ["user_id", "movie_id", "score", "ranking"]
-    recs_df = recs_df.copy()
-    recs_df = recs_df[cols]
-    recs_df["user_id"] = recs_df["user_id"].astype(int)
-    recs_df["movie_id"] = recs_df["movie_id"].astype(int)
-    recs_df["ranking"] = recs_df["ranking"].astype(int)
-    recs_tuples = list(recs_df.itertuples(index=False, name=None))
-
-    conn = sqlite3.connect(db_path)
-    cur = conn.cursor()
-
-    cur.executemany(
-        "INSERT OR REPLACE INTO Recommandation (user_id, movie_id, score, ranking) VALUES (?, ?, ?, ?);",
-        recs_tuples
+    final_scores = (
+        GAMMA * user_scores +
+        DELTA * item_scores
     )
 
-    conn.commit()
-    conn.close()
+    seen_movies = user_movie_matrix.loc[user_id]
+    seen_movies = seen_movies[seen_movies != 0].index
+
+    final_scores = final_scores.drop(
+        seen_movies,
+        errors="ignore"
+    )
+
+    final_scores = final_scores.sort_values(
+        ascending=False
+    )
+
+    recommendations_df = final_scores.reset_index()
+    recommendations_df.columns = ["movie_id", "score"]
+
+    recommendations_df["user_id"] = user_id
+    recommendations_df["ranking"] = range(
+        1,
+        len(recommendations_df) + 1
+    )
+    recommendations_df = recommendations_df.head(TOP_K).reset_index(drop=True)
+    recommendations_df["ranking"] = range(1, len(recommendations_df) + 1)
+
+    return recommendations_df
 
 
-write_recommendations_to_db(final_df, db_path)
+def build_all_recommendations(
+    user_movie_matrix,
+    user_similarity_df,
+    final_movie_similarity
+):
+    all_recommendations = []
+
+    for user_id in user_movie_matrix.index:
+        recommendations = build_recommendations_for_user(
+            user_id,
+            user_movie_matrix,
+            user_similarity_df,
+            final_movie_similarity
+        )
+
+        all_recommendations.append(recommendations)
+
+    return pd.concat(all_recommendations)
+
+
+# =============================================================================
+# DATABASE WRITE
+# =============================================================================
+
+def write_recommendations_to_db(
+    recommendations_df,
+    db_path
+):
+    recommendations_df = recommendations_df.copy()
+
+    recommendations_df = recommendations_df[
+        ["user_id", "movie_id", "score", "ranking"]
+    ]
+
+    recommendations_df["user_id"] = (
+        recommendations_df["user_id"].astype(int)
+    )
+
+    recommendations_df["movie_id"] = (
+        recommendations_df["movie_id"].astype(int)
+    )
+
+    recommendations_df["ranking"] = (
+        recommendations_df["ranking"].astype(int)
+    )
+
+    recommendation_tuples = list(
+        recommendations_df.itertuples(
+            index=False,
+            name=None
+        )
+    )
+
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        # start a transaction, delete existing rows (keeps table schema)
+        cur.execute("BEGIN")
+        cur.execute("DELETE FROM Recommandation")
+        if recommendation_tuples:
+            cur.executemany(
+                """
+                INSERT OR REPLACE INTO Recommandation
+                (user_id, movie_id, score, ranking)
+                VALUES (?, ?, ?, ?)
+                """,
+                recommendation_tuples
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+def main():
+    (
+        users_df,
+        movies_df,
+        ratings_df,
+        movies_genres_df,
+        genres_df,
+    ) = load_data(DB_PATH)
+
+    user_movie_matrix = build_user_movie_matrix(
+        ratings_df
+    )
+
+    user_similarity_df = build_user_similarity(
+        user_movie_matrix
+    )
+
+    movie_similarity_df = build_movie_similarity(
+        user_movie_matrix
+    )
+
+    genre_similarity_df = build_genre_similarity(
+        movies_df,
+        movies_genres_df,
+        genres_df
+    )
+
+    final_movie_similarity = build_final_movie_similarity(
+        movie_similarity_df,
+        genre_similarity_df
+    )
+
+    recommendations_df = build_all_recommendations(
+        user_movie_matrix,
+        user_similarity_df,
+        final_movie_similarity
+    )
+
+    write_recommendations_to_db(
+        recommendations_df,
+        DB_PATH
+    )
+
+
+if __name__ == "__main__":
+    main()
