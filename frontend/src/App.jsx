@@ -11,6 +11,7 @@ import Discover from './pages/Discover/Discover';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import RatingOnboarding from './pages/RatingOnboarding/RatingOnboarding';
+import DevUsers from './pages/Dev/DevUsers';
 
 function OnboardingGate({ children }) {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -38,6 +39,7 @@ function App() {
   return (
     <Layout>
       <Routes>
+        <Route path="/dev/users" element={<DevUsers />} />
         <Route
           path="/"
           element={

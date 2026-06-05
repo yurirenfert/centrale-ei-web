@@ -9,7 +9,7 @@ function Dev() {
         <Link className="Dev-link" to="/movies/new">
           Ajouter un film
         </Link>
-        <Link className="Dev-link" to="/users">
+        <Link className="Dev-link" to="/dev/users">
           Users
         </Link>
       </div>
