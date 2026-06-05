@@ -1,72 +1,64 @@
 import './Home.css';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Movie from '../../components/Movie/Movie';
 
 function Home() {
-  const { userId } = useParams();
-  const [currentUserLocal, setCurrentUserLocal] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('currentUser'));
-    } catch {
-      return null;
-    }
-  });
-
-  useEffect(() => {
-    function onStorage(e) {
-      if (e.key === 'currentUser') {
-        try {
-          setCurrentUserLocal(JSON.parse(e.newValue));
-        } catch {
-          setCurrentUserLocal(null);
-        }
-      }
-    }
-    window.addEventListener('storage', onStorage);
-
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   const [movies, setMovies] = useState([]);
   const [moviesLoadingError, setMoviesLoadingError] = useState(null);
   const [isMoviesLoading, setIsMoviesLoading] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount] = useState(20);
 
   useEffect(() => {
-    async function fetchRecommendations() {
+    async function fetchBaseMovies() {
+      const moviesResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/movies`
+      );
+
+      return moviesResponse.data.movies || [];
+    }
+
+    async function fetchRecommendedMovies(userId) {
+      const recommandationResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/recommandation/${userId}`
+      );
+
+      const recommandations = recommandationResponse.data.recommandation || [];
+
+      if (recommandations.length === 0) {
+        return [];
+      }
+
+      const moviesResponses = await Promise.all(
+        recommandations.map((rec) =>
+          axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/movies/${rec.movie_id}`
+          )
+        )
+      );
+
+      return moviesResponses.map((response, index) => ({
+        ...(response.data.movie || response.data),
+        score: recommandations[index].score,
+        ranking: recommandations[index].ranking,
+      }));
+    }
+
+    async function fetchMovies() {
       setIsMoviesLoading(true);
       setMoviesLoadingError(null);
 
       try {
         let moviesToDisplay = [];
 
-        if (currentUserLocal && userId) {
-          const recommandationResponse = await axios.get(
-            `http://localhost:8000/recommandation/${userId}`
-          );
+        if (currentUser?.id) {
+          moviesToDisplay = await fetchRecommendedMovies(currentUser.id);
+        }
 
-          const recommandations =
-            recommandationResponse.data.recommandation || [];
-
-          const moviesResponses = await Promise.all(
-            recommandations.map((rec) =>
-              axios.get(`http://localhost:8000/movies/${rec.movie_id}`)
-            )
-          );
-
-          moviesToDisplay = moviesResponses.map((response, index) => ({
-            ...response.data.movie,
-            score: recommandations[index].score,
-            ranking: recommandations[index].ranking,
-          }));
-        } else {
-          const moviesResponse = await axios.get(
-            'http://localhost:8000/movies'
-          );
-
-          moviesToDisplay = moviesResponse.data.movies || [];
+        if (moviesToDisplay.length === 0) {
+          moviesToDisplay = await fetchBaseMovies();
         }
 
         setMovies(moviesToDisplay);
@@ -78,8 +70,8 @@ function Home() {
       }
     }
 
-    fetchRecommendations();
-  }, [userId, currentUserLocal]);
+    fetchMovies();
+  }, [currentUser?.id]);
 
   const topMovie = movies.reduce(
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
@@ -114,13 +106,13 @@ function Home() {
         </div>
       )}
 
-      {currentUserLocal ? (
-        <h2>Recommandations pour {currentUserLocal.nickname}</h2>
+      {currentUser ? (
+        <h2>Recommandations pour {currentUser.nickname}</h2>
       ) : (
         <h2>Films populaires</h2>
       )}
 
-      {!currentUserLocal && (
+      {!currentUser && (
         <p>Connecte-toi pour avoir des recommandations personnalisées.</p>
       )}
 
