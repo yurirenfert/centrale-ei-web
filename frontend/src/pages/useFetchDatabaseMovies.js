@@ -13,41 +13,46 @@ export function useFetchDatabaseMovies(search = '', userId = null) {
     setVisibleCount(28);
 
     const timeoutId = setTimeout(() => {
-      if (userId) {
-        axios
-          .get(`${import.meta.env.VITE_BACKEND_URL}/recommandation/${userId}`)
-          .then((response) => {
-            const recommendedMovies = response.data.recommandations.map(
-              (r) => r.movie
-            );
-            setMovies(recommendedMovies);
-          })
-          .catch(() => {
-            axios
+      axios
+        .get(
+          userId
+            ? `${import.meta.env.VITE_BACKEND_URL}/recommandation/${userId}`
+            : `${import.meta.env.VITE_BACKEND_URL}/movies`
+        )
+        .then((response) => {
+          let moviesToDisplay = [];
+
+          if (userId) {
+            const recommandations =
+              response.data.recommandations ||
+              response.data.recommandation ||
+              [];
+
+            moviesToDisplay = recommandations
+              .map((r) => r.movie)
+              .filter(Boolean);
+          } else {
+            moviesToDisplay = response.data.movies || [];
+          }
+
+          if (moviesToDisplay.length === 0) {
+            return axios
               .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
-              .then((response) => setMovies(response.data.movies))
-              .finally(() => setIsMoviesLoading(false));
-          })
-          .finally(() => setIsMoviesLoading(false));
-      } else {
-        axios
-          .get(`${import.meta.env.VITE_BACKEND_URL}/movies`)
-          .then((response) => {
-            const allMovies = response.data.movies;
-            const cleanSearch = search.trim().toLowerCase();
-            const filtered = cleanSearch
-              ? allMovies.filter((m) =>
-                  m.title.toLowerCase().includes(cleanSearch)
-                )
-              : allMovies;
-            setMovies(filtered);
-          })
-          .catch((error) => {
-            setMoviesLoadingError('Impossible de charger les films.');
-            console.error(error);
-          })
-          .finally(() => setIsMoviesLoading(false));
-      }
+              .then((moviesResponse) => {
+                const allMovies = moviesResponse.data.movies || [];
+                setMovies(allMovies);
+              });
+          }
+
+          setMovies(moviesToDisplay);
+        })
+        .catch((error) => {
+          console.error(error);
+          setMoviesLoadingError('Impossible de charger les films.');
+        })
+        .finally(() => {
+          setIsMoviesLoading(false);
+        });
     }, 300);
 
     return () => clearTimeout(timeoutId);
