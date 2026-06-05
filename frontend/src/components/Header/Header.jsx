@@ -7,9 +7,9 @@ const Header = () => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   const logout = () => {
-    localStorage.removeItem('currentUser');
-    navigate('/');
-  };
+  localStorage.removeItem('currentUser');
+  window.location.href = '/'; 
+};
 
   return (
     <header className="Header-container">

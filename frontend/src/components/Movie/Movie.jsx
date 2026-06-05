@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import MovieActions from '../MovieActions/MovieActions';
-import { TMDB_IMAGE_BASE_URL } from '../../constants/tmdb';
 import './Movie.css';
 
 function Movie({ movie }) {
@@ -10,16 +9,8 @@ function Movie({ movie }) {
     typeof movie.vote_average === 'number'
       ? `${movie.vote_average.toFixed(1)}/10`
       : 'Non note';
-  const posterUrl = movie.poster_path
-    ? `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
-    : null;
-  const backdropUrl = movie.backdrop_path
-    ? `${TMDB_IMAGE_BASE_URL}/w780${movie.backdrop_path}`
-    : posterUrl;
-  console.log('MOVIE CARD:', movie);
-  console.log('LINK MOVIE ID:', movie.id);
-  console.log('LINK TMDB ID:', movie.tmdbId);
-
+  const posterUrl = movie.poster_path ?? null;
+  const backdropUrl = movie.background_path ?? posterUrl;
   return (
     <Link
       className="movie-card"
