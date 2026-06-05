@@ -1,0 +1,155 @@
+.RatingOnboarding-page {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(280px, 420px);
+  gap: 48px;
+  min-height: calc(100vh - 160px);
+  padding: 48px 32px;
+  align-items: center;
+  background-color: #141414;
+  color: #fff;
+}
+
+.RatingOnboarding-copy {
+  max-width: 520px;
+}
+
+.RatingOnboarding-kicker {
+  margin: 0 0 12px;
+  color: #e50914;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.RatingOnboarding-copy h1 {
+  margin: 0 0 18px;
+  font-size: 56px;
+  line-height: 1;
+}
+
+.RatingOnboarding-copy p:not(.RatingOnboarding-kicker) {
+  margin: 0;
+  max-width: 420px;
+  color: #b3b3b3;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.RatingOnboarding-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  padding: 24px;
+  border: 1px solid #2b2b2b;
+  border-radius: 8px;
+  background-color: #1f1f1f;
+}
+
+.RatingOnboarding-progress {
+  margin: 0;
+  color: #b3b3b3;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.RatingOnboarding-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  object-fit: cover;
+  background-color: #333;
+}
+
+.RatingOnboarding-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #d1d5db;
+  font-weight: 800;
+  text-align: center;
+}
+
+.RatingOnboarding-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.RatingOnboarding-details h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.RatingOnboarding-details span {
+  color: #e50914;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.RatingOnboarding-details p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #b3b3b3;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.RatingOnboarding-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.RatingOnboarding-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #8b8b8b;
+  border-radius: 50%;
+  color: #fff;
+  background-color: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.RatingOnboarding-actions button:last-child {
+  border-color: #e50914;
+  background-color: #e50914;
+}
+
+.RatingOnboarding-actions button:hover {
+  filter: brightness(1.12);
+}
+
+.RatingOnboarding-status,
+.RatingOnboarding-error {
+  margin: 0;
+  color: #d1d5db;
+  font-weight: 700;
+}
+
+.RatingOnboarding-error {
+  color: #f87171;
+}
+
+@media (max-width: 760px) {
+  .RatingOnboarding-page {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 16px;
+  }
+
+  .RatingOnboarding-copy h1 {
+    font-size: 42px;
+  }
+}

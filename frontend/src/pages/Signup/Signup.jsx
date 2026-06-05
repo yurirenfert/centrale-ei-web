@@ -30,9 +30,24 @@ function Signup() {
         email: formValues.email.trim(),
         nickname: formValues.displayName.trim(),
       })
-      .then(() => {
-        navigate('/login', {
-          state: { email: formValues.email },
+      .then((response) => {
+        const createdUser = response.data.user;
+
+        localStorage.setItem(
+          'currentUser',
+          JSON.stringify({
+            id: createdUser.id,
+            email: createdUser.email,
+            nickname: createdUser.nickname,
+          })
+        );
+        localStorage.setItem('ratingOnboardingUserId', String(createdUser.id));
+
+        navigate('/rating-onboarding', {
+          state: {
+            userId: createdUser.id,
+            displayName: createdUser.nickname,
+          },
         });
       })
       .catch((error) => {
