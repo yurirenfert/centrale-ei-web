@@ -17,6 +17,9 @@
 }
 
 .Header-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-left: auto; 
 }
 
@@ -75,4 +78,29 @@
 
 .Header-nav-right .Header-link:hover {
   color: #fff;
+}
+
+.Header-user-name {
+  color: #b3b3b3;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.Header-logout-button {
+  min-height: 32px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  padding: 0 12px;
+  color: #e5e5e5;
+  background-color: #2b2b2b;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.Header-logout-button:hover {
+  border-color: #555;
+  color: #fff;
+  background-color: #3a3a3a;
 }
