@@ -133,7 +133,7 @@ async function seedRatings(
     }
   }
   // insert in batches to avoid huge queries
-  const BATCH = 200; // adapter si besoin
+  const BATCH = 100; // adapter si besoin
   for (let i = 0; i < rows.length; i += BATCH) {
     const chunk = rows.slice(i, i + BATCH);
     try {

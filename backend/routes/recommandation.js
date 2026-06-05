@@ -8,16 +8,12 @@ router.get('/:user_id', function (req, res) {
   appDataSource
     .getRepository(Recommandation)
     .find({
-      where: { user_id: req.params.user_id },
+      where: { user_id: parseInt(req.params.user_id) },
       order: { ranking: 'ASC' },
+      relations: ['movie', 'movie.genres'],
     })
-    .then(function (recommandation) {
-      if (recommandation === null) {
-        res.status(404).json({ message: 'Recommandation not found' });
-      } else {
-        res.json({ recommandation: recommandation });
-      }
+    .then(function (recommandations) {
+      res.json({ recommandations });
     });
 });
-
 export default router;
