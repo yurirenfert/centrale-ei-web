@@ -1,12 +1,34 @@
 import './Home.css';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import Movie from '../../components/Movie/Movie';
+import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
 
 function Home() {
   const { userId } = useParams();
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  // keep a stable currentUser value in state to avoid effect reruns caused by object identity
+  const [currentUserLocal, setCurrentUserLocal] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser'));
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    function onStorage(e) {
+      if (e.key === 'currentUser') {
+        try {
+          setCurrentUserLocal(JSON.parse(e.newValue));
+        } catch {
+          setCurrentUserLocal(null);
+        }
+      }
+    }
+    window.addEventListener('storage', onStorage);
+
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   const [movies, setMovies] = useState([]);
   const [moviesLoadingError, setMoviesLoadingError] = useState(null);
@@ -21,7 +43,7 @@ function Home() {
       try {
         let moviesToDisplay = [];
 
-        if (currentUser && userId) {
+        if (currentUserLocal && userId) {
           const recommandationResponse = await axios.get(
             `http://localhost:8000/recommandation/${userId}`
           );
@@ -58,7 +80,7 @@ function Home() {
     }
 
     fetchRecommendations();
-  }, [userId, currentUser]);
+  }, [userId, currentUserLocal]);
 
   const topMovie = movies.reduce(
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
@@ -93,13 +115,13 @@ function Home() {
         </div>
       )}
 
-      {currentUser ? (
-        <h2>Recommandations pour {currentUser.nickname}</h2>
+      {currentUserLocal ? (
+        <h2>Recommandations pour {currentUserLocal.nickname}</h2>
       ) : (
         <h2>Films populaires</h2>
       )}
 
-      {!currentUser && (
+      {!currentUserLocal && (
         <p>Connecte-toi pour avoir des recommandations personnalisées.</p>
       )}
 
