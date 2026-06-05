@@ -1,14 +1,86 @@
 import './Home.css';
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Movie from '../../components/Movie/Movie';
-import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
 
 function Home() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const { userId } = useParams();
+  const [currentUserLocal, setCurrentUserLocal] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser'));
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    function onStorage(e) {
+      if (e.key === 'currentUser') {
+        try {
+          setCurrentUserLocal(JSON.parse(e.newValue));
+        } catch {
+          setCurrentUserLocal(null);
+        }
+      }
+    }
+    window.addEventListener('storage', onStorage);
+
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const [movies, setMovies] = useState([]);
+  const [moviesLoadingError, setMoviesLoadingError] = useState(null);
+  const [isMoviesLoading, setIsMoviesLoading] = useState(false);
   const [visibleCount, setVisibleCount] = useState(20);
 
-  const { movies, moviesLoadingError, isMoviesLoading } = useFetchDatabaseMovies('', currentUser?.id);
-  console.log(currentUser);
+  useEffect(() => {
+    async function fetchRecommendations() {
+      setIsMoviesLoading(true);
+      setMoviesLoadingError(null);
+
+      try {
+        let moviesToDisplay = [];
+
+        if (currentUserLocal && userId) {
+          const recommandationResponse = await axios.get(
+            `http://localhost:8000/recommandation/${userId}`
+          );
+
+          const recommandations =
+            recommandationResponse.data.recommandation || [];
+
+          const moviesResponses = await Promise.all(
+            recommandations.map((rec) =>
+              axios.get(`http://localhost:8000/movies/${rec.movie_id}`)
+            )
+          );
+
+          moviesToDisplay = moviesResponses.map((response, index) => ({
+            ...response.data.movie,
+            score: recommandations[index].score,
+            ranking: recommandations[index].ranking,
+          }));
+        } else {
+          const moviesResponse = await axios.get(
+            'http://localhost:8000/movies'
+          );
+
+          moviesToDisplay = moviesResponse.data.movies || [];
+        }
+
+        setMovies(moviesToDisplay);
+      } catch (error) {
+        console.error(error);
+        setMoviesLoadingError('Erreur lors du chargement des films.');
+      } finally {
+        setIsMoviesLoading(false);
+      }
+    }
+
+    fetchRecommendations();
+  }, [userId, currentUserLocal]);
+
   const topMovie = movies.reduce(
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
     null
@@ -17,14 +89,25 @@ function Home() {
   return (
     <div className="Home-container">
       {topMovie && (
-        <div className="Hero" style={{ backgroundImage: `url(${topMovie.background_path})` }}>
+        <div
+          className="Hero"
+          style={{ backgroundImage: `url(${topMovie.background_path})` }}
+        >
           <div className="Hero-overlay" />
           <div className="Hero-content">
             <span className="Hero-badge">🏆 Top 1 · Le plus populaire</span>
             <h1 className="Hero-title">{topMovie.title}</h1>
             <p className="Hero-overview">{topMovie.overview}</p>
             <br />
-            <button className="mon-bouton" onClick={() => window.open('https://www.youtube.com/watch?v=p6rbOYH2tGY', '_blank')}>
+            <button
+              className="mon-bouton"
+              onClick={() =>
+                window.open(
+                  'https://www.youtube.com/watch?v=p6rbOYH2tGY',
+                  '_blank'
+                )
+              }
+            >
               Play Now
             </button>
           </div>
@@ -44,19 +127,18 @@ function Home() {
       {isMoviesLoading && <p className="movies-empty-message">Chargement...</p>}
 
       {!isMoviesLoading && movies.length > 0 && (
-        <>
-          <div className="movies-list">
-            {movies.slice(0, visibleCount).map((movie) => (
-              <Movie key={movie.id} movie={movie} />
-            ))}
-          </div>
-          
-        </>
+        <div className="movies-list">
+          {movies.slice(0, visibleCount).map((movie) => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+        </div>
       )}
 
-      {!isMoviesLoading && movies.length === 0 && moviesLoadingError === null && (
-        <p className="movies-empty-message">Aucun film trouvé.</p>
-      )}
+      {!isMoviesLoading &&
+        movies.length === 0 &&
+        moviesLoadingError === null && (
+          <p className="movies-empty-message">Aucun film trouvé.</p>
+        )}
 
       {moviesLoadingError !== null && (
         <div className="movies-loading-error">{moviesLoadingError}</div>
