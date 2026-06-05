@@ -203,3 +203,66 @@
   border-color: #e50914;
   background-color: #e50914;
 }
+
+.Random-section {
+  margin-bottom: 32px;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.Random-btn {
+  padding: 10px 24px;
+  border-radius: 20px;
+  border: 1px solid #374151;
+  background-color: transparent;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.Random-btn:hover {
+  background-color: #e50914;
+  border-color: #e50914;
+}
+
+.Random-result {
+  display: flex;
+  gap: 16px;
+  background-color: #1f1f1f;
+  border-radius: 10px;
+  padding: 16px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.Random-poster {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.Random-info h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.Random-info p {
+  margin: 0 0 4px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.Random-overview {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #d1d5db !important;
+  font-size: 13px !important;
+}

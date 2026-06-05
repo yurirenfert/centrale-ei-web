@@ -46,7 +46,13 @@ function Discover() {
   useEffect(() => {
     console.log(movies[0]);
   }, [movies]);
+  const [randomMovie, setRandomMovie] = useState(null);
 
+  function genererFilmAleatoire() {
+  const pool = filteredMovies.length > 0 ? filteredMovies : movies;
+  const random = pool[Math.floor(Math.random() * pool.length)];
+  setRandomMovie(random);
+}
   return (
     <main className="Discover-container">
       <div className="Discover-header">
@@ -113,7 +119,23 @@ function Discover() {
           </div>
         </div>
       </div>
+      <div className="Random-section">
+        <button className="Random-btn" onClick={genererFilmAleatoire}>
+          🎲 Film aléatoire
+        </button>
 
+        {randomMovie && (
+          <div className="Random-result">
+            <img src={randomMovie.poster_path} alt={randomMovie.title} className="Random-poster" />
+            <div className="Random-info">
+              <h3>{randomMovie.title}</h3>
+              <p>{randomMovie.release_date?.slice(0, 4)}</p>
+              <p>{randomMovie.genres?.map(g => g.name).join(' · ')}</p>
+              <p className="Random-overview">{randomMovie.overview}</p>
+            </div>
+          </div>
+        )}
+      </div>
       {isMoviesLoading && (
         <p className="Discover-status">Chargement des films...</p>
       )}
