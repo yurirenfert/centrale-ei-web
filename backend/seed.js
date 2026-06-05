@@ -59,7 +59,6 @@ async function seedUsers(userRepository, n) {
     await userRepository.save(usersToCreate);
   }
 
-  // return all users (including pre-existing) so seeding continues normally
   return await userRepository.find();
 }
 
