@@ -6,7 +6,6 @@ import Movie from '../../components/Movie/Movie';
 
 function Home() {
   const { userId } = useParams();
-  // keep a stable currentUser value in state to avoid effect reruns caused by object identity
   const [currentUserLocal, setCurrentUserLocal] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('currentUser'));

@@ -44,7 +44,7 @@ function Movie({ movie }) {
           />
         )}
         <div className="movie-preview-content">
-          <MovieActions />
+          <MovieActions movieId={movie.id} />
           <h2 className="movie-title">{movie.title}</h2>
           <div className="movie-meta">
             <span>{releaseYear}</span>
