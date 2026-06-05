@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MovieActions.css';
@@ -7,6 +7,27 @@ function MovieActions({ className = '', movieId }) {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const [selectedRating, setSelectedRating] = useState(null);
+
+  useEffect(() => {
+    if (!currentUser || !movieId) {
+      return;
+    }
+
+    axios
+      .get(
+        `${import.meta.env.VITE_BACKEND_URL}/ratings/${
+          currentUser.id
+        }/${movieId}`
+      )
+      .then((response) => {
+        if (response.data.rating) {
+          setSelectedRating(response.data.rating.rating_value);
+        }
+      })
+      .catch((error) => {
+        console.error('Error while fetching rating:', error);
+      });
+  }, [movieId]);
 
   const sendRating = (ratingValue) => {
     if (!currentUser) {
