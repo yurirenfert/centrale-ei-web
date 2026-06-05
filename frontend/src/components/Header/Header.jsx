@@ -1,9 +1,7 @@
 import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
-import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   const logout = () => {
@@ -33,9 +31,9 @@ const Header = () => {
 
         {currentUser ? (
           <><div className="Header-nav-right">
-            <span className="Header-link">{currentUser.nickname}</span>
+            <span className="Header-user-name">{currentUser.nickname}</span>
 
-            <button type="button" className="Header-link" onClick={logout}>
+            <button type="button" className="Header-logout-button" onClick={logout}>
               Déconnexion
             </button>
             </div>

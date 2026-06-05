@@ -6,7 +6,6 @@ import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
 function Home() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const [visibleCount, setVisibleCount] = useState(20);
-
   const { movies, moviesLoadingError, isMoviesLoading } =
     useFetchDatabaseMovies('', currentUser?.id);
   console.log(currentUser);
@@ -14,6 +13,9 @@ function Home() {
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
     null
   );
+  const { movies: allMovies } = useFetchDatabaseMovies('', null);
+  const comedyMovies = allMovies.filter(m => m.genres?.some(g => g.name === 'Comedy'));
+  const actionMovies = allMovies.filter(m => m.genres?.some(g => g.name === 'Action'));
 
   return (
     <div className="Home-container">
@@ -64,7 +66,27 @@ function Home() {
           </div>
         </>
       )}
+      {!isMoviesLoading && comedyMovies.length > 0 && (
+      <>
+        <h2>Comédies</h2>
+        <div className="movies-list">
+          {comedyMovies.slice(0, visibleCount).map((movie) => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </>
+    )}
 
+    {!isMoviesLoading && actionMovies.length > 0 && (
+      <>
+        <h2>Action</h2>
+        <div className="movies-list">
+          {actionMovies.slice(0, visibleCount).map((movie) => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </>
+    )}
       {!isMoviesLoading &&
         movies.length === 0 &&
         moviesLoadingError === null && (
