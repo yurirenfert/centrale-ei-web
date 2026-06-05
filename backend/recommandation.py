@@ -10,7 +10,13 @@ from sklearn.preprocessing import MultiLabelBinarizer
 # CONFIGURATION
 # =============================================================================
 
-DB_PATH = "/Users/emmanueldelache/Downloads/Git-Projet-ST4/centrale-ei-web/backend/database.sqlite3"
+import os
+from pathlib import Path
+
+DB_PATH = os.environ.get(
+    "RECOMMENDER_DB_PATH",
+    str(Path(__file__).resolve().parent / "database.sqlite3")
+)
 
 # Item similarity weights
 ALPHA = 0.6  # Collaborative filtering
@@ -59,6 +65,7 @@ def _pick_col(df, candidates):
             return c
     return None
 
+
 def build_user_movie_matrix(ratings_df):
     return ratings_df.pivot(
         index="user_id",
@@ -98,8 +105,10 @@ def build_genre_similarity(
 ):
     # pick actual column names present in your dataframes
     movie_col = _pick_col(movies_df, ["movie_id", "movieId", "id"])
-    mg_movie_col = _pick_col(movies_genres_df, ["movie_id", "movieId", "movieId_id", "movieId"])
-    mg_genre_col = _pick_col(movies_genres_df, ["genre_id", "genreId", "genreId_id", "genreId"])
+    mg_movie_col = _pick_col(
+        movies_genres_df, ["movie_id", "movieId", "movieId_id", "movieId"])
+    mg_genre_col = _pick_col(
+        movies_genres_df, ["genre_id", "genreId", "genreId_id", "genreId"])
     genre_id_col = _pick_col(genres_df, ["id", "genre_id", "genreId"])
     genre_name_col = _pick_col(genres_df, ["name", "title", "genre"])
 
