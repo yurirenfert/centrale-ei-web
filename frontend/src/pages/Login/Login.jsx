@@ -70,7 +70,7 @@ function Login() {
           })
         );
 
-        navigate(`/`);
+        window.location.href = '/';
       })
       .catch((error) => {
         console.error('LOGIN ERROR:', error);
