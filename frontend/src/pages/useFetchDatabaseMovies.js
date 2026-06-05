@@ -16,7 +16,7 @@ export function useFetchDatabaseMovies(search = '', userId = null) {
 const timeoutId = setTimeout(() => {
       if (userId) {
   axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/recommendations/${userId}`)
+    .get(`${import.meta.env.VITE_BACKEND_URL}/recommandation/${userId}`)
     .then((response) => {
       const recommendedMovies = response.data.recommandations.map(r => r.movie);
       setMovies(recommendedMovies);

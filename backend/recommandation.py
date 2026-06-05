@@ -1,5 +1,5 @@
 import sqlite3
-
+import os
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
@@ -10,7 +10,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 # CONFIGURATION
 # =============================================================================
 
-DB_PATH = "/Users/emmanueldelache/Downloads/Git-Projet-ST4/centrale-ei-web/backend/database.sqlite3"
+DB_PATH = os.path.join(os.path.dirname(__file__), "database.sqlite3")
 
 # Item similarity weights
 ALPHA = 0.6  # Collaborative filtering

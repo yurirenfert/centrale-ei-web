@@ -13,12 +13,7 @@ router.get('/:user_id', function (req, res) {
       relations: ['movie', 'movie.genres'],
     })
     .then(function (recommandations) {
-      if (recommandations === null) {
-        res.status(404).json({ message: 'Recommandation not found' });
-      } else {
-        res.json({ recommandations });
-      }
+      res.json({ recommandations });
     });
 });
-
 export default router;

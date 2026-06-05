@@ -17,7 +17,7 @@ router.get('/:id', function (req, res) {
   appDataSource
     .getRepository(Movie)
     .findOne({ 
-      where: { tmdbId: parseInt(req.params.id) }, 
+      where: { id: parseInt(req.params.id) }, 
       relations: ['genres']
     })
     .then(function (movie) {
@@ -31,19 +31,19 @@ router.get('/:id', function (req, res) {
 
 router.post('/new', function (req, res) {
   const movieRepository = appDataSource.getRepository(Movie);
-  const tmdbId = req.body.tmdbId || req.body.id;
+  const Id = req.body.id;
   const title = req.body.title || req.body.name;
 
-  if (tmdbId === undefined || title === undefined) {
+  if (id === undefined || title === undefined) {
     res.status(400).json({
-      message: 'tmdbId and title are required',
+      message: 'id and title are required',
     });
 
     return;
   }
 
   const newMovie = movieRepository.create({
-    tmdbId: tmdbId,
+    id: id,
     title: title,
     release_date:
       req.body.release_date || req.body.releaseDate || req.body.date,
