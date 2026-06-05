@@ -6,7 +6,6 @@ import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
 function Home() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const [visibleCount, setVisibleCount] = useState(20);
-
   const { movies, moviesLoadingError, isMoviesLoading } =
     useFetchDatabaseMovies('', currentUser?.id);
   console.log(currentUser);
@@ -14,7 +13,8 @@ function Home() {
     (best, m) => (m.popularity > (best?.popularity ?? 0) ? m : best),
     null
   );
-
+  const comedyMovies = movies.filter(m => m.genres?.some(g => g.name === 'Comedy'));
+  const actionMovies = movies.filter(m => m.genres?.some(g => g.name === 'Action'));
   return (
     <div className="Home-container">
       {topMovie && (
@@ -64,7 +64,27 @@ function Home() {
           </div>
         </>
       )}
+      {!isMoviesLoading && comedyMovies.length > 0 && (
+      <>
+        <h2>Comédies</h2>
+        <div className="movies-list">
+          {comedyMovies.map((movie) => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </>
+    )}
 
+    {!isMoviesLoading && actionMovies.length > 0 && (
+      <>
+        <h2>Action</h2>
+        <div className="movies-list">
+          {actionMovies.map((movie) => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </>
+    )}
       {!isMoviesLoading &&
         movies.length === 0 &&
         moviesLoadingError === null && (
