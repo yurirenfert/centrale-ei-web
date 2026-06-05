@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MovieActions from '../../components/MovieActions/MovieActions';
 import './MovieDetails.css';
 import { useFetchMovieDetails } from './useFetchMovieDetails';
@@ -34,12 +34,17 @@ function MovieDetails() {
           aria-hidden="true"
         />
       )}
+
       <div className="movie-details-overlay" />
 
       <section className="movie-details-content">
-        <Link className="movie-details-back-link" to="/">
+        <button
+          type="button"
+          className="movie-details-back-link"
+          onClick={() => navigate(-1)}
+        >
           Retour
-        </Link>
+        </button>
 
         <div className="movie-details-main">
           {posterUrl !== null && (
@@ -53,7 +58,10 @@ function MovieDetails() {
           <div className="movie-details-copy">
             <h1>{movie.title}</h1>
 
-            <MovieActions className="movie-details-actions" />
+            <MovieActions
+              className="movie-details-actions"
+              movieId={movie.id}
+            />
 
             <div className="movie-details-meta">
               {releaseYear && <span>{releaseYear}</span>}
