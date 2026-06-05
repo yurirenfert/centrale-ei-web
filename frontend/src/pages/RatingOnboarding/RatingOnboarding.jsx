@@ -49,7 +49,7 @@ function RatingOnboarding() {
 
   const finishOnboarding = () => {
     localStorage.removeItem('ratingOnboardingUserId');
-    navigate('/');
+    navigate('/login');
   };
 
   const saveRating = (ratingValue) => {
