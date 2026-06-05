@@ -1,8 +1,8 @@
 import './Home.css';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Movie from '../../components/Movie/Movie';
-import { useFetchDatabaseMovies } from '../useFetchDatabaseMovies.js';
 
 function Home() {
   const { userId } = useParams();
